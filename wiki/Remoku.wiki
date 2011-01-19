@@ -1,0 +1,36 @@
+#summary Remoku - A Web App for remote control of Roku Players
+
+= Introduction =
+
+Remoku - A Web App for remote control of Roku Players
+
+http://apps4tv.com/remoku
+
+Copyright 2010, A. Cassidy Napoli and and B. Galliart. All rights reserved. See source for License.
+
+= What it does=
+
+Control a Roku Streaming Media Player over a local area network.
+
+Supports all physical buttons found on the newer Roku remotes (Back, Home, Up, Down, Left, Right, OK, Instant Replay, Info, Rev, Play/Pause, Fwd).
+
+Supports direct text entry.
+
+Works on recent versions of most major browsers: Chrome, Firefox 3.6.12, Safari 5.0.2, Mobile Safari/iOS devices(specfically tested iPhone4/ iOS 4.1), and Internet Explorer 8.0.7600(although it's ugly). Opera and Android devices are untested but expected to work (feedback welcome).
+Supports the application cache feature of html5. This means that browsers that support application cache will store the whole web app locally and if my site is unavailable, your remote will still work!
+= What it doesn't =
+No auto-detect Rokus. I'm working on a primitive detection routine, but Javascript is limited in this area.
+No support for multiple Rokus. This will be available in the future.
+No direct launching of apps. The apps list isn't currently directly retrievable via Javascript. A workaround may be possible.
+No advertising.
+
+Requirements: Modern browser with Javascript and cookies turned on.
+Instructions: Browse to http://apps4tv.com/remoku and simply provide the local ip address`*` of a Roku on startup(or afterwards on the Config screen) and click "Remote".
+
+It still needs some basic polish, but it works well enough for me at this point that I'd like to hear feedback. If you have constructive criticism, I'd like to hear it. Please keep in mind that this is a piece of hobby work, and that the deliberate choice I made to use pure html, css, and Javascript code limits the possibility of certain functionality I wish I could enable. It should, however, allow anyone with a semi-modern browser to use the new buttons and enter text more easily than with a traditional remote.
+
+If you want something more full featured and own an iPhone or Android device, I highly recommend the impressive DVPRemote and Android Roku Remote, both now available with updates for the new ECP remote functionality. The developers have done excellent work and the apps are both worth the price.
+
+I'm using a simplified BSD license, so developers should be free to incorporate it into their projects, commercial or not(for example, Roku could freely include a modified version as a hosted page within the Roku Player). If anyone is interested in contributing code or style improvements, they would be most welcome. Let me know if you are interested, and we'll work out how to incorporate your contribution. All of the source is visible as html, css, and js files.
+
+`*`*Note: no information is sent outside your network. Your browser makes a direct connection to your Roku and that is the only communication taking place in this app. The source code is fully visible for people to review.
