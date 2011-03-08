@@ -36,7 +36,7 @@ I'm using a simplified BSD license, so developers should be free to incorporate 
 Wiki Documentation
 ----
 
-ECPLaunchParametersReference
+LaunchParametersReference
 
 
 `*`*Note: no information is sent outside your network. Your browser makes a direct connection to your Roku and that is the only communication taking place in this app. The source code is fully visible for people to review.
