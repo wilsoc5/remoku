@@ -29,4 +29,4 @@ End Sub
 }}}
 So the ecp params get passed in as an Object at the app runtime, which you can then access and act on in any way you see fit.  The only restrictions are that the params be url-encoded and there's an ill-defined max length for urls(see here: http://www.boutell.com/newfaq/misc/urllength.html).  I don't have any decent example code on hand for ecp launching, but it's something I'll be working on soon.
 
-For batch files, curl can do post requests: http://superuser.com/questions/149329/how-do-i-make-a-post-request-with-curl[/quote]
+For batch files, curl can do post requests: http://superuser.com/questions/149329/how-do-i-make-a-post-request-with-curl
