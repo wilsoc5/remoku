@@ -34,7 +34,7 @@ If you want something more full featured and own an iPhone or Android device, I 
 I'm using a simplified BSD license, so developers should be free to incorporate it into their projects, commercial or not(for example, Roku could freely include a modified version as a hosted page within the Roku Player). If anyone is interested in contributing code or style improvements, they would be most welcome. Let me know if you are interested, and we'll work out how to incorporate your contribution. All of the source is visible as html, css, and js files.
 
 Wiki Documentation
----
+----
 
 ECPLaunchParametersReference
 
