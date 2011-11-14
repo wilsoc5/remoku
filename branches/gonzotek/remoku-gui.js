@@ -122,7 +122,7 @@ function manualAdd(){
 }	
 	
 function findRokus(){
-	var ifr = document.getElementById('rokuloadframe');
+	var ifr = document.getElementById('rokuscanframe');
 	ifr.onload = loadedframe;
 	if (lastOctet<255 && rokus.length != document.getElementById('num').value && cancel!=true){
 		rokuFound = false;
@@ -149,7 +149,7 @@ function findRokus(){
 		rokupicker +="<select></form>";
 		document.getElementById('rokus').innerHTML=rokupicker;
 		cancel=false;
-		document.getElementById('scan').innerHTML="Scan";
+		document.getElementById('scanforroku').innerHTML="Scan";
 		canceled = false;
 		return true;
 		}
@@ -174,7 +174,7 @@ function checkRokuLoadResult(){
 
 function Scan(){
 	if(canceled==false){
-		document.getElementById('scan').innerHTML="Cancel Scan";
+		document.getElementById('scanforroku').innerHTML="Cancel Scan";
 		cancel = false
 		canceled = true;
 		findRokus();
@@ -182,7 +182,7 @@ function Scan(){
 	else{
 		canceled = false;
 		cancel = true;
-		document.getElementById('scan').innerHTML="Scan";
+		document.getElementById('scanforroku').innerHTML="Scan";
 		}
 }
 
@@ -329,6 +329,7 @@ function textOnOff(){
 var remoteButtons;
 var rokupostframe = document.createElement("iframe");
 var rokutextframe = document.createElement("iframe");
+var rokuscanframe = document.createElement("iframe");
 var rokupostform = document.createElement("form");
 var rokutextform = document.createElement("form");
 
@@ -338,23 +339,21 @@ var trasmitText = "";
 
 var appidarray = [];
 
-
+var loadAppsButton;
+var scanForRokuButton;
+var addRokuButton;
 
 var navRemote;
 var navText;	
 var navApps;
 var navConfig;
-
 var navArray = new Array();
 
 var remoteScreen;
 var configScreen;
 var textScreen;
 var appsScreen;
-
 var screenArray = new Array(); 
-
-
 
 window.onload = function(){
 	window.scrollTo(0, 1);
@@ -400,7 +399,14 @@ window.onload = function(){
 	rokutextframe.style.display="none";
 	rokutextframe.onload = delayNextQuery;
 	rokutextframe = document.body.appendChild(rokutextframe);
-	
+		
+	rokuscanframe.name="rokuscanframe"
+	rokuscanframe.id="rokuscanframe";
+	rokuscanframe.style.visibility="hidden";
+	rokuscanframe.style.display="none";
+	rokuscanframe.src="about:blank";
+	rokuscanframe = document.body.appendChild(rokuscanframe);
+
 	rokupostform.style.visibility="hidden";
 	rokupostform.style.display="none";
 	rokupostform.id="rokupost";
@@ -444,6 +450,16 @@ window.onload = function(){
 	
 	sendTextBtn = document.getElementById("sendtext");
 	sendTextBtn.onclick = rokuText;
+	
+	loadAppsButton = document.getElementById("loadapps");
+	loadAppsButton.onclick = rokuApps;
+
+	addRokuButton = document.getElementById("addroku");
+	addRokuButton.onclick = manualAdd;
+
+	scanForRokuButton = document.getElementById("scanforroku");
+	scanForRokuButton.onclick = Scan;
+	
 }
 
 //Hide iPhone URL bar
