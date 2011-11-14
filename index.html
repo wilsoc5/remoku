@@ -1,44 +1,164 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html manifest="cache.manifest">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/ >
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <title>Remoku</title>
-<link rel="icon" 
-      type="image/png" 
-      href="favicon.png">
-<link rel="stylesheet" href="./remoku.css" type="text/css" />
-<script src="./webtoolkit.url.js"></script>
-<script src="./remoku.js"></script>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" type="text/css" href="./remoku-gui.css" media="screen" /> 
+<script src="./remoku-gui.js"></script>
 </head>
-
 <body>
-	<div id="remote">
-		<button id="Back">Back</button><button id="Home">Home</button>
-		<button id="Up">&nbsp;&uarr;&nbsp;</button>
-		<button id="Left">&larr;</button><button id="Select">OK</button><button id="Right">&rarr;</button>
-		<button id="Down">&nbsp;&darr;&nbsp;</button>
-		<button id="InstantReplay">Replay</button><button id="Info">Info</button>
-		<button id="Rev">&nbsp;&#171;&nbsp;</button><button id="Play">&#9658;||</button><button id="Fwd">&nbsp;&#187;&nbsp;</button>
-	</div>
-	
-	<div id="searchdiv">
-		 <!--button id="Search">Search</button-->
-		 <button id="Enter">Enter</button>
-		 <input id="searchtext" type="search" />
-	</div>
-	<div id="configscreen">
-		<input id="octet1" type="tel" value="192" />
-		<input id="octet2" type="tel" value="168" />
-		<input id="octet3" type="tel" value="1"/>
-		<input id="octet4" type="tel" value="1"/>
-	</div>
-	<div id="iform">
-		<!--iframe id="rokuresponse" name="rokuresponse"></iframe-->
-		<form id="rokupost" method="post" target="rokuresponse"></form>
-	</div>
-<button id="Config">Cfg</button>
+<table id="navtable">
+  <tr>
+	<td>
+	<a  class="active nav" id="navremote">
+	<img src="images/remote.png" style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; display:block;">
+	<div>Remote</div> 
+	</a>
+	</td>
+	<td>
+	<a   class="nav" id="navtext"> 
+	<img src="images/keyboard_magnify.png"  style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; display:block;">
+	<div>Text</div>
+	</a>
+	 </td>
+	<td>
+	<a  class="nav" id="navapps"> 
+	<img src="images/application_view_tile.png"  style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; display:block;">
+	<div>Channels</div> 
+	</a>
+	</td>
+	<td>
+	<a   class="nav" id="navconfig"> 
+	<img src="images/setting_tools.png"  style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; margin-top:0;margin-bottom:0;display:block;">
+	<div>Settings</div> 
+	</a>
+	</td>
+  <tr>
+</table> 
+
+<div id="remote">
+<table >
+	<tr>
+		<td colspan="3">
+			<div id="text" style="visibility:hidden;display:none; background-image: url(../images/top_edge.png); height: 32px; width: 229px; ">
+				<span id="searchline"><input id="textentry"><button id="sendtext">Send</button></span>
+				<!--img src="images/top_edge.png"-->
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td rowspan="6"><img src="images/left_edge.png"></td>
+		<td>
+			<table >
+				<tr>
+					<td><img src="images/back.png" class="link" id="Return"></td>
+					<td><img src="images/home.png" class="link" id="Home"></td>
+				</tr>
+			</table>
+		</td>
+		<td rowspan="6"><img src="images/right_edge.png"></td>
+	</tr>
+	<tr>
+		<td>
+			<table >
+				<tr>
+					<td><img src="images/top_left_corner.png"></td>
+					<td><img src="images/up.png" class="link" id="Up"></td>
+					<td><img src="images/top_right_corner.png"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table >
+				<tr>
+					<td><img src="images/left.png" class="link" id="Left"></td>
+					<td><img src="images/ok.png" class="link" id="Select"></td>
+					<td><img src="images/right.png" class="link" id="Right"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table >
+				<tr>
+					<td><img src="images/bottom_left_corner.png"></td>
+					<td><img src="images/down.png" class="link" id="Down"></td>
+					<td><img src="images/bottom_right_corner.png"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table >
+				<tr>
+					<td><img src="images/replay.png" class="link" id="Replay"></td>
+					<td><img src="images/info.png" class="link" id="Info"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table >
+				<tr>
+					<td><img src="images/previous.png" class="link" id="Rev"></td>
+					<td><img src="images/play.png" class="link" id="Play"></td>
+					<td><img src="images/next.png" class="link" id="Fwd"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3"><img src="images/bottom_edge.png"></td>
+	</tr>
+</table>
+</div>
+
+
+<div id="apps" style="visibility:hidden;display:none;">
+<ul id="applist">
+</ul>
+</div>
+
+<div id="config" style="visibility:hidden;display:none;">
+	<h1>Find My Roku</h1>
+	<label>My Network: </label>
+	<input class="address" id="octet1" value="192" /> .
+	<input class="address" id="octet2" value="168" /> .
+	<input class="address" id="octet3" value="1" /> . X
+	<br>
+	<label>How Many Rokus? </label>
+	<select id="num">
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+	<option value="10">10</option>
+	<option value="11">11</option>
+	<option value="12">12</option>
+	<option value="13">13</option>
+	<option value="14">14</option>
+	<option value="15">15</option>
+	</select> 
+	<button id="scan" onclick="Scan();">Scan</button><br>
+	<label>Direct Add: </label><input class="maddress" id="maddress" value="192.168.1.3" /><button id="add" onclick="manualAdd();">+</button><br>
+	<iframe style="visibility:none; display: none;" id="rokuloadframe" src="about:blank">
+	</iframe>
+	<div id="rokus"></div>
+	<button id="clickme" onclick="rokuApps();">Load Apps</button>
+</div>
 </body>
 </html>

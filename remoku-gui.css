@@ -14,8 +14,8 @@
 	margin-left:auto;
 	margin-right:auto;
 	width:280px;
-	height:373px;
-	overflow:scroll;
+	height:6073px;
+	overflow:auto;*/	
 	}
 #apps .icons{max-height:75px;}	
 #apps ul{margin:0;padding:0; }
@@ -23,6 +23,10 @@
 #apps a{text-decoration:none;color:white; vertical-align:middle;}
 #apps img{vertical-align:middle; line-height: 2em}
 
+#searchline{
+	margin-left:20px;
+	margin-top: 3px;
+	}
 	
 .address{
 	width:25px;
