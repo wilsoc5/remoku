@@ -1,11 +1,14 @@
 CACHE MANIFEST
-#BUILD:November 14, 2011 12:33:02 PM 
+#BUILD:November 14, 2011 12:39:35 PM 
 NETWORK:
 *
 CACHE:
 index.html
 remoku-gui.css
 remoku-gui.js
+apple-touch-icon-precomposed.png
+apple-touch-icon.png
+favicon.png
 images/application_view_tile.png
 images/back.png
 images/bottom_edge.png

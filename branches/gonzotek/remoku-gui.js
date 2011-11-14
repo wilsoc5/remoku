@@ -6,16 +6,15 @@
 ////////////////////////
 //BEGIN HELPER FUNCTIONS
 
-//function: include(array, obj)
-
-//include([1,2,3,4], 3); // true
-//include([1,2,3,4], 6); // undefined
-
 function dbg(log){
 	if (console.log) console.log(log);
 	else alert (log);	
 }
 
+//function: include(array, obj)
+
+//include([1,2,3,4], 3); // true
+//include([1,2,3,4], 6); // undefined
 function include(arr,obj) {
     return (arr.indexOf(obj) != -1);
 }
@@ -136,7 +135,6 @@ function findRokus(){
 	}else{
 		lastOctet = 1;
 		ifr.src = "about:blank";
-		//document.getElementById('rokus').innerHTML=rokus;
 		createCookie("rokus", rokus.join(","), 365);
 		var rokupicker = "<form>Control this Roku: <select id='rokuselect' onchange='useRoku();'>";
 		if (rokus.length==1){rokuAddress = rokus[0]; createCookie("rokuAddress",rokus[0],365);}
@@ -204,12 +202,10 @@ function rokupost(action, param){
 	var rokupost = document.getElementById('rokupost');
 	rokupost.setAttribute("action", "http://" + rokuAddress + ":8060/" + action + "/" + param);
 	rokupost.submit();
-	//rokupost.focus();
 	return false;
 }
 
 function rokulaunch(id){
-	//alert (id);
 	rokupost("launch",id);
 	}
 
@@ -219,7 +215,6 @@ function nextQuery(){
 	var text = document.getElementById("textentry").value;
 	if(text){
 		var letter = text.slice(0,1);
-		//dbg(letter);
 		rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + escape(letter));
 		rokutext.submit();
 		text = text.slice(1);
@@ -237,7 +232,6 @@ function rokuText(){
 	if(text){
 		var letter = text.slice(0,1);
 		text = text.slice(1);
-		//dbg(letter);
 		rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + escape(letter));
 		rokutext.submit();
 		document.getElementById("textentry").value = text
@@ -246,7 +240,6 @@ function rokuText(){
 	
 function delayLoadIcons(){
 	if(appidarray) var appid = appidarray.shift();
-	//if(dbg)dbg(appid);
 	if(appid)document.getElementById("app"+appid).src = 'http://' + rokuAddress +':8060/query/icon/' + appid;	
 	}
 
@@ -270,7 +263,6 @@ function _rmAppsCB(apps){
 		}
 	applist.innerHTML = list;
 	appid = appidarray.shift();
-	//dbg(appid);
 	var dt = new Date();
 	if(appid!=null)document.getElementById("app"+appid).src = 'http://' + rokuAddress +':8060/query/icon/' + appid;
 		
@@ -283,9 +275,6 @@ function rokuApps(){
 	script.src = "http://"+ rokuAddress +":88/apps.js";
 	document.body.appendChild(script);
 }
-
-
-
 
 //END ROKU SPECIFIC CODE
 ////////////////////////
@@ -314,14 +303,11 @@ function activateButton(){
 			navArray[i].setAttribute("class", "nav");
 		}
 	}
-	//if(this.id == "navapps"){rokuApps();}
 	setTimeout(hideURLbar, 100);
 }
 
 function textOnOff(){
-	//dbg(this.getAttribute("class"));
 	textScreen = document.getElementById("text");
-	//dbg(textScreen.id);
 	if (this.getAttribute("class")=="nav") {
 		this.setAttribute("class", "active nav");
 		textScreen.style.visibility = "visible";
@@ -350,7 +336,6 @@ var rokuAddress;
 
 var trasmitText = "";
 
-//var channelInputText;
 var appidarray = [];
 
 
@@ -372,7 +357,6 @@ var screenArray = new Array();
 
 
 window.onload = function(){
-	//window.applicationCache.swapCache();
 	window.scrollTo(0, 1);
 	rokuAddress = readCookie("rokuAddress");
 	try{
@@ -417,8 +401,6 @@ window.onload = function(){
 	rokutextframe.onload = delayNextQuery;
 	rokutextframe = document.body.appendChild(rokutextframe);
 	
-	
-	
 	rokupostform.style.visibility="hidden";
 	rokupostform.style.display="none";
 	rokupostform.id="rokupost";
@@ -441,8 +423,6 @@ window.onload = function(){
 		remoteButtons[i].onmouseup = btnUp;
 		remoteButtons[i].ontouchend = btnUp;
 	}
-	//channelInputText = document.getElementById("channelinput");
-	//if (localStorage)channelInputText.value = localStorage.getItem('apps');
 	
 	
 	remoteScreen = document.getElementById("remote");
