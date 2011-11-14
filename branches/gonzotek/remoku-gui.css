@@ -7,8 +7,11 @@
 #text{
 	margin-left:auto;
 	margin-right:auto;
-	width:280px;
-	height:373px;
+	/*width:280px;
+	height:373px;*/
+	
+	visibility:hidden;display:none; background-image: url(./images/top_edge.png); height: 32px; width: 229px; 
+	
 	}
 #apps{
 	margin-left:auto;
