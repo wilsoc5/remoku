@@ -276,6 +276,10 @@ function rokuApps(){
 	document.body.appendChild(script);
 }
 
+function launchRemoku(){
+	rokulaunch("DEV");
+	}
+
 //END ROKU SPECIFIC CODE
 ////////////////////////
 
@@ -340,6 +344,7 @@ var trasmitText = "";
 var appidarray = [];
 
 var loadAppsButton;
+var startAppsButton;
 var scanForRokuButton;
 var addRokuButton;
 
@@ -454,6 +459,9 @@ window.onload = function(){
 	loadAppsButton = document.getElementById("loadapps");
 	loadAppsButton.onclick = rokuApps;
 
+	startAppsButton = document.getElementById("startremoku");
+	startAppsButton .onclick = launchRemoku;
+	
 	addRokuButton = document.getElementById("addroku");
 	addRokuButton.onclick = manualAdd;
 
