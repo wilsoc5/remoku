@@ -277,7 +277,7 @@ function rokuApps(){
 }
 
 function launchRemoku(){
-	rokulaunch("DEV");
+	rokulaunch("dev");
 	}
 
 //END ROKU SPECIFIC CODE
