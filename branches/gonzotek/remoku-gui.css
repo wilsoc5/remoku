@@ -37,9 +37,11 @@
 
 #searchline{
 	margin-left:20px;
-	margin-top: 10px;
 	}
-	
+#textentry,#sendtext{
+		margin-top: 10px;
+
+	}
 .address{
 	width:25px;
 	}
