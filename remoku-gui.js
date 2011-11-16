@@ -105,19 +105,24 @@ function manualAdd(){
 	}
 	if (address!=null){
 	if(!include(rokus,address))rokus.push(address);
-	var rokupicker = "<form>Control this Roku: <select id='rokuselect' onchange='useRoku();'>";
-	createCookie("rokus", rokus.join(","), 365);
+	var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
+	if(rokus.length>0)createCookie("rokus", rokus.join(","), 365);
+	var rokucount = 0;
 	if (rokus.length==1){rokuAddress = rokus[0];createCookie("rokuAddress",rokus[0],365);}
 		while(rokus.length>0){
 			var r = rokus.shift();
 			if(rokuAddress==r){
-				rokupicker +=  "<option selected=selected>" + r + "</option>"//TODOHERE
+				rokupicker +=  "<option selected=selected>" + r + "</option>"
+				rokucount = rokucount + 1
 			}else{
-				rokupicker +=  "<option>" + r + "</option>"
+				if(r){
+					rokupicker +=  "<option>" + r + "</option>"
+					rokucount = rokucount + 1
+				}
 			}
 		}
 		rokupicker +="<select></form>";
-		document.getElementById('rokus').innerHTML=rokupicker;
+		if (rokucount)document.getElementById('rokus').innerHTML=rokupicker;
 	}
 }	
 	
@@ -135,19 +140,24 @@ function findRokus(){
 	}else{
 		lastOctet = 1;
 		ifr.src = "about:blank";
-		createCookie("rokus", rokus.join(","), 365);
-		var rokupicker = "<form>Control this Roku: <select id='rokuselect' onchange='useRoku();'>";
+		if(rokus.length>0)createCookie("rokus", rokus.join(","), 365);
+		var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
 		if (rokus.length==1){rokuAddress = rokus[0]; createCookie("rokuAddress",rokus[0],365);}
+		var rokucount = 0;
 		while(rokus.length>0){
 			var r = rokus.shift();
 			if(rokuAddress==r){
 				rokupicker +=  "<option selected=selected>" + r + "</option>"//TODOHERE
+				rokucount = rokucount + 1
 			}else{
-				if (r!="")rokupicker +=  "<option>" + r + "</option>"
+				if (r!=""){
+					rokupicker +=  "<option>" + r + "</option>"
+					rokucount = rokucount + 1
+				}
 			}
 		}
 		rokupicker +="<select></form>";
-		document.getElementById('rokus').innerHTML=rokupicker;
+		if (rokucount)document.getElementById('rokus').innerHTML=rokupicker;
 		cancel=false;
 		document.getElementById('scanforroku').innerHTML="Scan";
 		canceled = false;
@@ -378,8 +388,8 @@ window.onload = function(){
 		rokus = [];
 	}
 	if (rokus.length>0){
-		if (rokus[0]=="")rokus.shift();
-		var rokupicker = "<form>Control this Roku: <select id='rokuselect' onchange='useRoku();'>";
+		//if (rokus[0]=="")rokus.shift();
+		var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
 			while(rokus.length>0){
 				var r = rokus.shift();
 				if(rokuAddress==r){
@@ -388,8 +398,8 @@ window.onload = function(){
 					if(r!="")rokupicker +=  "<option>" + r + "</option>";
 				}
 			}
-			rokupicker +="</select></form><!--br><a href='http://"+rokuAddress+":8060/query/apps' target='_blank'>Load Apps</a -->";
-			document.getElementById('rokus').innerHTML=rokupicker;
+			rokupicker +="</select></form>";
+			if(rokus)document.getElementById('rokus').innerHTML=rokupicker;
 	}
 
 	rokupostframe.name="rokuresponse"
