@@ -2,11 +2,24 @@
 	border: 1px solid white;
 	margin: 1px;
 	}
+.remoteicons{
+	clear:both;
+	float:none;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;
+	margin-top:0;
+	margin-bottom:0;
+	display:block;
+	
+	}
 #config{
 	margin-left:auto;
 	margin-right:auto;
 	width:280px;
-	height:352px;
+	height:373px;
+	visibility:hidden;
+	display:none;
 	}
 #text{
 	margin-left:auto;
@@ -16,13 +29,17 @@
 	background-image: url(./images/top_edge.png);
 	height: 32px;
 	width: 229px; 
+	
 	}
 #apps{
 	margin-left:auto;
 	margin-right:auto;
 	width:280px;
-	height:6073px;
-	overflow:auto;*/	
+	height:378px;
+	overflow:auto;
+	visibility:hidden;
+	display:none;
+	-webkit-overflow-scrolling: touch;
 	}
 #apps .icons{max-height:75px;}	
 #apps ul{margin:0;padding:0; }
@@ -40,8 +57,17 @@
 	}
 #textentry,#sendtext{
 		margin-top: 10px;
-
 	}
+
+#textentry{
+	width:125px
+	}
+	
+#sendtext{
+	width:50px;
+	margin-left:3px;
+	}	
+	
 .address{
 	width:25px;
 	}
@@ -49,7 +75,9 @@
 	width:115px;
 	margin-bottom:10px;
 	}
-
+#manualrokus{
+	width:120px;
+}
 	
 .nav{
 	cursor:pointer;

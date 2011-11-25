@@ -6,6 +6,7 @@
 ////////////////////////
 //BEGIN HELPER FUNCTIONS
 
+
 function dbg(log){
 	if (console.log) console.log(log);
 	else alert (log);	
@@ -122,24 +123,25 @@ function manualAdd(){
 			}
 		}
 		rokupicker +="<select></form>";
-		if (rokucount)document.getElementById('rokus').innerHTML=rokupicker;
+		if (rokucount){
+			document.getElementById('rokus').innerHTML=rokupicker;
+			}
 	}
 }	
 	
 function findRokus(){
-	var ifr = document.getElementById('rokuscanframe');
-	ifr.onload = loadedframe;
 	if (lastOctet<255 && rokus.length != document.getElementById('num').value && cancel!=true){
 		rokuFound = false;
 		address = document.getElementById('octet1').value + 
-		"." + document.getElementById('octet2').value +
-		"." + document.getElementById('octet3').value + 
-		"." + lastOctet;
-		ifr.src = "http://" + address +":8060/query/apps";
+		    "." + document.getElementById('octet2').value +
+		    "." + document.getElementById('octet3').value + 
+		    "." +                                lastOctet;
+		rokuscanframe.src = "http://" + address +":8060/query/apps";
 		setTimeout('checkRokuLoadResult()',750);
 	}else{
 		lastOctet = 1;
-		ifr.src = "about:blank";
+		var framesrc = rokuscanframe.src;
+		rokuscanframe.src = "about:blank";
 		if(rokus.length>0)createCookie("rokus", rokus.join(","), 365);
 		var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
 		if (rokus.length==1){rokuAddress = rokus[0]; createCookie("rokuAddress",rokus[0],365);}
@@ -147,12 +149,12 @@ function findRokus(){
 		while(rokus.length>0){
 			var r = rokus.shift();
 			if(rokuAddress==r){
-				rokupicker +=  "<option selected=selected>" + r + "</option>"//TODOHERE
-				rokucount = rokucount + 1
+				rokupicker +=  "<option selected=selected>" + r + "</option>";
+				rokucount = rokucount + 1;
 			}else{
 				if (r!=""){
-					rokupicker +=  "<option>" + r + "</option>"
-					rokucount = rokucount + 1
+					rokupicker +=  "<option>" + r + "</option>";
+					rokucount = rokucount + 1;
 				}
 			}
 		}
@@ -173,6 +175,7 @@ function checkRokuLoadResult(){
 	var result 
 	if (rokuFound == true ){
 	 result = "Found: " + address + "<br>";
+	 dbg(result + ". source = " + rokuscanframe.src + ". Title: " + rokuscanframe.title);
 	 if(!include(rokus,address))rokus.push(address);
 	} else {
 	 result = "Not found: " + address + "<br>";
@@ -184,7 +187,7 @@ function checkRokuLoadResult(){
 
 function Scan(){
 	if(canceled==false){
-		document.getElementById('scanforroku').innerHTML="Cancel Scan";
+		document.getElementById('scanforroku').innerHTML="Stop";
 		cancel = false
 		canceled = true;
 		findRokus();
@@ -260,7 +263,9 @@ function loadRokuImages(){
 
 		
 function _rmAppsCB(apps){
-	if(localStorage)localStorage.setItem('apps', JSON.stringify(apps));
+	if(localStorage){
+		localStorage.setItem('apps', JSON.stringify(apps));
+	}
 	var list = "";
 	var applist = document.getElementById("applist");
     appidarray = new Array();
@@ -420,6 +425,7 @@ window.onload = function(){
 	rokuscanframe.style.visibility="hidden";
 	rokuscanframe.style.display="none";
 	rokuscanframe.src="about:blank";
+	rokuscanframe.onload = loadedframe;
 	rokuscanframe = document.body.appendChild(rokuscanframe);
 
 	rokupostform.style.visibility="hidden";

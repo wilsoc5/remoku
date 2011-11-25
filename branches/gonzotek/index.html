@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html manifest="cache.manifest">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/ >
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <title>Remoku</title>
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" href="favicon.png" />
 <link rel="stylesheet" type="text/css" href="./remoku-gui.css" media="screen" /> 
+<link rel="apple-touch-startup-image" href="remoku-splash.png" />
 <script src="./remoku-gui.js"></script>
 </head>
 <body>
@@ -15,25 +16,25 @@
   <tr>
 	<td>
 	<a  class="active nav" id="navremote">
-	<img src="images/remote.png" style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; display:block;">
+	<img class="remoteicons" src="images/remote.png">
 	<div>Remote</div> 
 	</a>
 	</td>
 	<td>
-	<a   class="nav" id="navtext"> 
-	<img src="images/keyboard_magnify.png"  style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; display:block;">
+	<a class="nav" id="navtext"> 
+	<img class="remoteicons" src="images/keyboard_magnify.png">
 	<div>Text</div>
 	</a>
 	 </td>
 	<td>
 	<a  class="nav" id="navapps"> 
-	<img src="images/application_view_tile.png"  style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; display:block;">
+	<img class="remoteicons" src="images/application_view_tile.png">
 	<div>Channels</div> 
 	</a>
 	</td>
 	<td>
 	<a   class="nav" id="navconfig"> 
-	<img src="images/setting_tools.png"  style="clear:both;float:none;margin-left:auto;margin-right:auto;text-align:center; margin-top:0;margin-bottom:0;display:block;">
+	<img class="remoteicons" src="images/setting_tools.png">
 	<div>Settings</div> 
 	</a>
 	</td>
@@ -123,12 +124,12 @@
 </div>
 
 
-<div id="apps" style="visibility:hidden;display:none;">
+<div id="apps">
 <ul id="applist">
 </ul>
 </div>
 
-<div id="config" style="visibility:hidden;display:none;">
+<div id="config">
 	<div class="box">
 	<h2>Control This Roku</h2>
 	<div id="rokus">Please add or scan for Roku units below.</div>
@@ -167,5 +168,6 @@
 	<button id="loadapps">Load Apps</button>
 	</div>
 </div>
+
 </body>
 </html>
