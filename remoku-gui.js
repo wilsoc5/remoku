@@ -120,6 +120,7 @@ function updateSelect() {
 			rokuSelect.options[i] = new Option(rokus[i], rokus[i], rokuSelected, rokuSelected);
 		}
 	}
+	if(rokuAddress==undefined || rokuAddress=="")rokuAddress=rokus[0];
 }
 
 function addRoku(){
@@ -218,7 +219,7 @@ function firstSetup(){
 	for(i=0;i<screenArray.length;i++){
 		screenArray[i].setAttribute("class", "hidden");
 		}
-	firstSetupScreen.setAttribute("class", "visible")
+	firstSetupScreen.setAttribute("class", "visible");
 	//var setup = confirm("It looks like you haven't used Remoku before. Would you like to begin by scanning for Rokus?");
 	//if(setup){
 	//	rokuCount = prompt ("Ok, how many Rokus do you own?", "1");
@@ -340,6 +341,7 @@ function btnUp(){
 
 function activateButton(){
 	var activeBtn = this.id;
+	firstSetupScreen.setAttribute("class", "hidden");
 	for(i=0;i<navArray.length;i++){
 		if (activeBtn == navArray[i].id){
 			navArray[i].setAttribute("class", "active nav");
@@ -426,9 +428,9 @@ var screenArray = new Array();
 window.onload = function(){
 	window.scrollTo(0, 1);
 	dbgOut = document.getElementById("dbgOut");
-	if(localStorage.getItem)dbg("localStorage supported");
-	dbg(navigator.appName);
 	dbg(navigator.userAgent);
+	if(localStorage.getItem)dbg("localStorage supported");
+
 	rokuSelect = document.getElementById("rokus");
 	rokuSelect.onchange = setRokuAddress;
 	
@@ -469,7 +471,7 @@ window.onload = function(){
 	}catch(err){
 		apps = [];	
 	}
-	if(apps.length>0)_rmAppsCB(apps);
+	if(apps)_rmAppsCB(apps);
 	
 	rokupostframe.name="rokuresponse"
 	rokupostframe.id="rokuresponse";
