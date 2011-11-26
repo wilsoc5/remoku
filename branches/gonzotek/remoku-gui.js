@@ -6,10 +6,17 @@
 ////////////////////////
 //BEGIN HELPER FUNCTIONS
 
+if (!Array.unique) Array.prototype.unique = function() {
+	    var o = {}, i, l = this.length, r = [];
+	    for(i=0; i<l;i+=1) o[this[i]] = this[i];
+	    for(i in o) r.push(o[i]);
+	    return r;
+};
 
 function dbg(log){
 	if (console.log) console.log(log);
-	else alert (log);	
+	//else alert (log);
+	dbgOut.innerHTML += log + "<br>";	
 }
 
 //function: include(array, obj)
@@ -72,6 +79,22 @@ function getElementsByClass(theClass, classType)
 	return returnerArray;
 }
 
+
+function stopFindRokus() {
+    if (window.stop) {
+        window.stop();
+    }
+    else if (document.execCommand) {
+        document.execCommand("Stop", false);
+    }   
+}
+//Use following javascript function to get domain from URL.
+//Example url: http://192.168.1.3:8060/query/icon/11
+//Example return: 192.168.1.3
+function getDomainFromUrl(url) {
+	return url.match(/:\/\/(.[^/]+)\:/)[1];
+}
+
 //END HELPER FUNCTIONS
 //////////////////////
 
@@ -80,123 +103,130 @@ function getElementsByClass(theClass, classType)
 ///////////////////////////
 //BEGIN DISCOVERY FUNCTIONS
 
-var rokuFound = false;
-var lastOctet = 1;
-var address   = "";
-var rokus     = [];
-var rokuCount = 2;
-var canceled = false;
-var cancel;
-
-
-function useRoku(){
-	rokuAddress = document.getElementById('rokuselect').options[document.getElementById('rokuselect').selectedIndex].value;
-	createCookie("rokuAddress", rokuAddress, 365);
-}
-
-function manualAdd(){
-	address = document.getElementById('maddress').value;
-	try
-	{
-		rokus = readCookie("rokus").split(",");
+function updateSelect() {
+	while (rokuSelect.length>0){
+		rokuSelect.remove(rokuSelect.length -1);
 	}
-	catch(err)
-	{
-		rokus = [];
-	}
-	if (address!=null){
-	if(!include(rokus,address))rokus.push(address);
-	var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
-	if(rokus.length>0)createCookie("rokus", rokus.join(","), 365);
-	var rokucount = 0;
-	if (rokus.length==1){rokuAddress = rokus[0];createCookie("rokuAddress",rokus[0],365);}
-		while(rokus.length>0){
-			var r = rokus.shift();
-			if(rokuAddress==r){
-				rokupicker +=  "<option selected=selected>" + r + "</option>"
-				rokucount = rokucount + 1
-			}else{
-				if(r){
-					rokupicker +=  "<option>" + r + "</option>"
-					rokucount = rokucount + 1
-				}
-			}
-		}
-		rokupicker +="<select></form>";
-		if (rokucount){
-			document.getElementById('rokus').innerHTML=rokupicker;
-			}
-	}
-}	
 	
-function findRokus(){
-	if (lastOctet<255 && rokus.length != document.getElementById('num').value && cancel!=true){
-		rokuFound = false;
-		address = document.getElementById('octet1').value + 
-		    "." + document.getElementById('octet2').value +
-		    "." + document.getElementById('octet3').value + 
-		    "." +                                lastOctet;
-		rokuscanframe.src = "http://" + address +":8060/query/apps";
-		setTimeout('checkRokuLoadResult()',750);
-	}else{
-		lastOctet = 1;
-		var framesrc = rokuscanframe.src;
-		rokuscanframe.src = "about:blank";
-		if(rokus.length>0)createCookie("rokus", rokus.join(","), 365);
-		var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
-		if (rokus.length==1){rokuAddress = rokus[0]; createCookie("rokuAddress",rokus[0],365);}
-		var rokucount = 0;
-		while(rokus.length>0){
-			var r = rokus.shift();
-			if(rokuAddress==r){
-				rokupicker +=  "<option selected=selected>" + r + "</option>";
-				rokucount = rokucount + 1;
-			}else{
-				if (r!=""){
-					rokupicker +=  "<option>" + r + "</option>";
-					rokucount = rokucount + 1;
-				}
+	rokus  = scannedRokus.concat(manualRokus).unique();
+	
+	for (i=0;i<rokus.length;i++) {
+		if(rokus[i]!=null){
+			if(rokus.length==1){
+				rokuAddress=rokus[i];
+				localStorage.setItem('rokuAddress', rokuAddress);
 			}
+			var rokuSelected = rokuAddress==rokus[i] ? true : false;
+			rokuSelect.options[i] = new Option(rokus[i], rokus[i], rokuSelected, rokuSelected);
 		}
-		rokupicker +="<select></form>";
-		if (rokucount)document.getElementById('rokus').innerHTML=rokupicker;
-		cancel=false;
-		document.getElementById('scanforroku').innerHTML="Scan";
-		canceled = false;
-		return true;
-		}
-}
-
-function loadedframe(){
-	rokuFound = true;
-}
-
-function checkRokuLoadResult(){
-	var result 
-	if (rokuFound == true ){
-	 result = "Found: " + address + "<br>";
-	 dbg(result + ". source = " + rokuscanframe.src + ". Title: " + rokuscanframe.title);
-	 if(!include(rokus,address))rokus.push(address);
-	} else {
-	 result = "Not found: " + address + "<br>";
 	}
-	document.getElementById('rokus').innerHTML=result + "Total found: " + rokus.length;
-	lastOctet++;
-	findRokus();
 }
 
-function Scan(){
-	if(canceled==false){
-		document.getElementById('scanforroku').innerHTML="Stop";
-		cancel = false
-		canceled = true;
-		findRokus();
+function addRoku(){
+	manualRokus.push(manualInput.value);
+	manualRokus = manualRokus.unique();
+	localStorage.setItem('manualRokus', manualRokus.join(","));
+	buildManualRokusMenu();
+	updateSelect();
+	return false;
+}
+
+function removeRoku(){
+	try{
+		var removedRoku = manualSelect[manualSelect.selectedIndex].value;
+	}
+	catch(err){
+		//dbg(err);
+	}
+	//dbg(removedRoku);
+	for (i = 0; i<manualRokus.length;i++){
+		if(removedRoku==manualRokus[i])manualRokus.splice(i,1);
 		}
+	manualRokus = manualRokus.unique();
+	localStorage.setItem('manualRokus', manualRokus.join(","));
+	buildManualRokusMenu();
+	updateSelect();
+	return false;
+}
+
+function buildManualRokusMenu(){
+	while (manualSelect.length>0){
+		manualSelect.remove(manualSelect.length - 1);
+	}
+	manualRokus = manualRokus.unique();
+	for (i = 0; i<manualRokus.length; i++){
+		var rokuSelected = rokuAddress==manualRokus[i] ? true : false;
+		//alert(manualRokus[i]);
+		manualSelect.options[i] = new Option(manualRokus[i], manualRokus[i], rokuSelected);
+	}
+}
+
+
+function loadedImage() {
+	var URL = this.src;
+	scannedRokus.push(getDomainFromUrl(URL));
+	
+	if(scannedRokus.length<=rokuCount){
+		localStorage.setItem('scannedRokus', scannedRokus.join(","));
+		updateSelect();
+	}
+	if (scannedRokus.length>=rokuCount) {
+		scanButton.innerHTML="Scan";
+		scanning = false;
+		stopFindRokus();
+		}
+}
+
+
+function findRokus() {
+	scannedRokus = new Array;
+	setRokuCount();
+	if(!scanning){
+		this.innerHTML="Stop";
+		scanning = true;
+		var images = [];
+		for (i = 1; i < 255; i++) {
+			images[i] = new Image();
+			var URL = "http://" + myNetwork + "." + i + ":8060/query/icon/11";
+			images[i].onload = loadedImage;
+			images[i].src = URL;
+		}
+	}
 	else{
-		canceled = false;
-		cancel = true;
-		document.getElementById('scanforroku').innerHTML="Scan";
+		scanning = false;
+		this.innerHTML="Scan";
+		stopFindRokus();
+	}
+}
+
+function setMyNetwork() {
+	myNetwork = [octet1.value,octet2.value,octet3.value].join(".");
+	localStorage.setItem('myNetwork', myNetwork);
+}
+
+function setRokuCount() {
+	rokuCount = numField.value;
+	localStorage.setItem('rokuCount', rokuCount);
+}
+
+function setRokuAddress(){
+	rokuAddress = this.options[this.selectedIndex].value;
+	localStorage.setItem('rokuAddress', rokuAddress);
+	}
+
+function firstSetup(){
+	for(i=0;i<screenArray.length;i++){
+		screenArray[i].setAttribute("class", "hidden");
 		}
+	firstSetupScreen.setAttribute("class", "visible")
+	//var setup = confirm("It looks like you haven't used Remoku before. Would you like to begin by scanning for Rokus?");
+	//if(setup){
+	//	rokuCount = prompt ("Ok, how many Rokus do you own?", "1");
+	//	myAddress = prompt ("Thanks, last question. What is the network base address. If you're not sure, try the suggested network", "192.168.1");
+	//	alert  ("Great, now press ok and your network will be scanned for Rokus.");
+	//	numField.value = rokuCount;
+	//	findRokus();
+ 	//}
 }
 
 //END DISCOVERY FUNCTIONS
@@ -284,7 +314,6 @@ function _rmAppsCB(apps){
 }
 	
 function rokuApps(){
-	rokuAddress = readCookie("rokuAddress");
 	var script = document.createElement("script");
 	script.type = "text/javascript";
 	script.src = "http://"+ rokuAddress +":88/apps.js";
@@ -314,11 +343,9 @@ function activateButton(){
 	for(i=0;i<navArray.length;i++){
 		if (activeBtn == navArray[i].id){
 			navArray[i].setAttribute("class", "active nav");
-			screenArray[i].style.visibility = "visible";
-			screenArray[i].style.display = "block";
+			screenArray[i].setAttribute("class", "visible");
 		} else {
-			screenArray[i].style.visibility = "hidden";
-			screenArray[i].style.display = "none";
+			screenArray[i].setAttribute("class", "hidden");
 			navArray[i].setAttribute("class", "nav");
 		}
 	}
@@ -345,14 +372,34 @@ function textOnOff(){
 //////////////////////
 //BEGIN INITIALIZATION
 
+var rokuSelect;
+var myNetwork;
+var octet1;
+var octet2;
+var octet3;
+var scanButton;
+var removeButton;
+var addButton;
+var scanning = false;
+var foundRokus = 0;
+var rokuAddress;
+var rokus = [];
+var rokuCount;
+var numField;
+var manualInput;
+var manualSelect;
+
+var scannedRokus = [];
+var manualRokus = [];
+
+var dbgOut;
+
 var remoteButtons;
 var rokupostframe = document.createElement("iframe");
 var rokutextframe = document.createElement("iframe");
 var rokuscanframe = document.createElement("iframe");
 var rokupostform = document.createElement("form");
 var rokutextform = document.createElement("form");
-
-var rokuAddress;
 
 var trasmitText = "";
 
@@ -373,40 +420,57 @@ var remoteScreen;
 var configScreen;
 var textScreen;
 var appsScreen;
+var firstSetupScreen;
 var screenArray = new Array(); 
 
 window.onload = function(){
 	window.scrollTo(0, 1);
-	rokuAddress = readCookie("rokuAddress");
+	dbgOut = document.getElementById("dbgOut");
+	if(localStorage.getItem)dbg("localStorage supported");
+	dbg(navigator.appName);
+	dbg(navigator.userAgent);
+	rokuSelect = document.getElementById("rokus");
+	rokuSelect.onchange = setRokuAddress;
+	
+	scannedRokus = localStorage.getItem('scannedRokus') ? localStorage.getItem('scannedRokus').split(",") : [];
+	octet1 = document.getElementById('octet1');
+	octet2 = document.getElementById('octet2');
+	octet3 = document.getElementById('octet3');
+	octet1.onchange = setMyNetwork;
+	octet2.onchange = setMyNetwork;
+	octet3.onchange = setMyNetwork;
+	
+	myNetwork = localStorage.getItem('myNetwork') ? localStorage.getItem('myNetwork') : "192.168.1";
+	var octets = myNetwork.split(".");
+	octet1.value=octets[0];
+	octet2.value=octets[1];
+	octet3.value=octets[2];
+
+	rokuCount = localStorage.getItem('rokuCount') ? localStorage.getItem('rokuCount') : "1";
+	numField = document.getElementById('num');
+	numField.value = rokuCount;
+	numField.onchange = setRokuCount;
+	
+	scanButton = document.getElementById('scanforroku');
+	scanButton.onclick = findRokus;
+	
+	rokuAddress = localStorage.getItem('rokuAddress');
+	manualInput = document.getElementById('maddress');
+	manualSelect = document.getElementById('manualrokus');
+	manualRokus = localStorage.getItem('manualRokus') ? localStorage.getItem('manualRokus').split(",") : [];
+	removeButton = document.getElementById('removeroku');
+	removeButton.onclick = removeRoku;
+	addButton = document.getElementById('addroku');
+	addButton.onclick = addRoku;
+	if(manualRokus.length>0) buildManualRokusMenu();
+	updateSelect();
 	try{
 		var apps = JSON.parse(localStorage.getItem('apps'))
 	}catch(err){
 		apps = [];	
 	}
-	if(localStorage)_rmAppsCB(apps);
-	try
-	{
-		rokus = readCookie("rokus").split(",");
-	}
-	catch(err)
-	{
-		rokus = [];
-	}
-	if (rokus.length>0){
-		//if (rokus[0]=="")rokus.shift();
-		var rokupicker = "<form><select id='rokuselect' onchange='useRoku();'>";
-			while(rokus.length>0){
-				var r = rokus.shift();
-				if(rokuAddress==r){
-					rokupicker +=  "<option selected=selected>" + r + "</option>"//TODOHERE
-				}else{
-					if(r!="")rokupicker +=  "<option>" + r + "</option>";
-				}
-			}
-			rokupicker +="</select></form>";
-			if(rokus)document.getElementById('rokus').innerHTML=rokupicker;
-	}
-
+	if(apps.length>0)_rmAppsCB(apps);
+	
 	rokupostframe.name="rokuresponse"
 	rokupostframe.id="rokuresponse";
 	rokupostframe.style.visibility="hidden";
@@ -419,15 +483,7 @@ window.onload = function(){
 	rokutextframe.style.display="none";
 	rokutextframe.onload = delayNextQuery;
 	rokutextframe = document.body.appendChild(rokutextframe);
-		
-	rokuscanframe.name="rokuscanframe"
-	rokuscanframe.id="rokuscanframe";
-	rokuscanframe.style.visibility="hidden";
-	rokuscanframe.style.display="none";
-	rokuscanframe.src="about:blank";
-	rokuscanframe.onload = loadedframe;
-	rokuscanframe = document.body.appendChild(rokuscanframe);
-
+	
 	rokupostform.style.visibility="hidden";
 	rokupostform.style.display="none";
 	rokupostform.id="rokupost";
@@ -456,6 +512,7 @@ window.onload = function(){
 	configScreen = document.getElementById("config");
 	textScreen = document.getElementById("text");
 	appsScreen = document.getElementById("apps");
+	firstSetupScreen = document.getElementById("firstsetup");
 	screenArray = [remoteScreen,appsScreen,configScreen];
 	
 	navRemote = document.getElementById("navremote");
@@ -477,12 +534,10 @@ window.onload = function(){
 
 	startAppsButton = document.getElementById("startremoku");
 	startAppsButton .onclick = launchRemoku;
-	
-	addRokuButton = document.getElementById("addroku");
-	addRokuButton.onclick = manualAdd;
+	if(!rokuAddress) {
+		 firstSetup();
+	 }
 
-	scanForRokuButton = document.getElementById("scanforroku");
-	scanForRokuButton.onclick = Scan;
 	
 }
 

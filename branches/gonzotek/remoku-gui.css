@@ -1,3 +1,11 @@
+body{
+	background-color:#000000;
+	border-width: 0px;
+	color:#FFFFFF;
+	border:0;
+	padding:0;
+	margin:0;
+}
 .box{
 	border: 1px solid white;
 	margin: 1px;
@@ -18,8 +26,12 @@
 	margin-right:auto;
 	width:280px;
 	height:373px;
-	visibility:hidden;
-	display:none;
+	}
+#firstsetup{
+	margin-left:auto;
+	margin-right:auto;
+	width:280px;
+	height:373px;
 	}
 #text{
 	margin-left:auto;
@@ -37,8 +49,6 @@
 	width:280px;
 	height:378px;
 	overflow:auto;
-	visibility:hidden;
-	display:none;
 	-webkit-overflow-scrolling: touch;
 	}
 #apps .icons{max-height:75px;}	
@@ -56,7 +66,7 @@
 	margin-left:20px;
 	}
 #textentry,#sendtext{
-		margin-top: 10px;
+	margin-top: 10px;
 	}
 
 #textentry{
@@ -95,23 +105,22 @@
 .link{
 	cursor:pointer;
 	}
-
+.hidden{
+	visibility:hidden;
+	display:none;
+	}
+	
+.visible{
+	visibility:visible;
+	display:block;
+	}
+	
 img{
 	padding:0px;
 	margin:0px;
 	border-width: 0px;
 	float:left;
 	-webkit-touch-callout:none;
-}
-
-body
-{
-	border-width: 0px;
-	background-color:#000000;
-	color:#FFFFFF;
-	border:0;
-	padding:0;
-	margin:0;
 }
 
 td,tr{
