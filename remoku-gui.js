@@ -244,6 +244,12 @@ function setRokuCount() {
 
 function setRokuAddress(){
 	rokuAddress = this.options[this.selectedIndex].value;
+	try{
+		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
+	}catch(err){
+		apps = [];	
+	}
+	if(apps)_rmAppsCB(apps);
 	setConfig('rokuAddress', rokuAddress);
 	}
 
@@ -327,7 +333,7 @@ function loadRokuImages(){
 		
 function _rmAppsCB(apps){
 	if(localStorage.setItem){
-		localStorage.setItem('apps', JSON.stringify(apps));
+		localStorage.setItem(rokuAddress + '-apps', JSON.stringify(apps));
 	}
 	var list = "";
 	var applist = document.getElementById("applist");
@@ -401,8 +407,8 @@ function wipeSettings(){
 	setConfig("scannedRokus", "");
 	setConfig("manualRokus", "");
 	setConfig("rokuCount", "");
-	setConfig("apps", "");
-
+	//setConfig("apps", "");
+	if (localStorage.clear) localStorage.clear();
 }
 //////////////
 //GUI BINDINGS
@@ -551,7 +557,7 @@ window.onload = function(){
 	if(manualRokus.length>0) buildManualRokusMenu();
 	updateSelect();
 	try{
-		var apps = JSON.parse(localStorage.getItem('apps'))
+		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
 	}catch(err){
 		apps = [];	
 	}
