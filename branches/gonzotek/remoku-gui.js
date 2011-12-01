@@ -67,7 +67,7 @@ function readCookie(name) {
 function dbg(log){
 	if (console.log) console.log(log);
 	//else alert (log);
-	dbgOut.innerHTML += log + "<br>";	
+	dbgOut.innerHTML += log + "<br><br>";	
 }
 
 //function: include(array, obj)
@@ -396,7 +396,14 @@ function getBuild(){
 //END ROKU SPECIFIC CODE
 ////////////////////////
 
+function wipeSettings(){
+	setConfig("rokuAddress","");
+	setConfig("scannedRokus", "");
+	setConfig("manualRokus", "");
+	setConfig("rokuCount", "");
+	setConfig("apps", "");
 
+}
 //////////////
 //GUI BINDINGS
 function btnDown(){
@@ -498,12 +505,14 @@ var useCookies = false;
 window.onload = function(){
 	window.scrollTo(0, 1);
 	dbgOut = document.getElementById("dbgOut");
+	wipeSettingsButton = document.getElementById("wipesettings");
+	wipeSettingsButton.onclick = wipeSettings;
 	dbg(navigator.userAgent);
 	if(isBadBrowser()){
 		useCookies = true;
-		dbg("Browser lacks proper localStorage support, falling back to cookies. Channel list cannot be saved.");
+		dbg("Browser lacks localStorage support, falling back to cookies. Channel lists cannot be saved.");
 	} else {
-		dbg("Browser claims localStorage support, will not use cookies.");
+		dbg("Browser has localStorage support. Channel lists will be saved.");
 	}
 	
 	rokuSelect = document.getElementById("rokus");
