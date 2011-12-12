@@ -1,6 +1,6 @@
 CACHE MANIFEST
 #Remoku Web App Version: DEV, Build: 
-#December 01, 2011 11:32:07 AM 
+#December 12, 2011 10:01:35 AM 
 NETWORK:
 *
 CACHE:
@@ -16,6 +16,8 @@ images/bottom_edge.png
 images/bottom_left_corner.png
 images/bottom_right_corner.png
 images/down.png
+images/DPad.png
+images/goodies.png
 images/home.png
 images/info.png
 images/keyboard_magnify.png
