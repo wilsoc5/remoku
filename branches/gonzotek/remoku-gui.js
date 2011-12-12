@@ -109,6 +109,9 @@ function getElementsByClass(theClass, classType)
 	return returnerArray;
 }
 
+function preventMove(event){
+	event.preventDefault();
+}
 
 function stopFindRokus() {
     if (window.stop) {
@@ -190,24 +193,41 @@ function buildManualRokusMenu(){
 		//alert(manualRokus[i]);
 		manualSelect.options[i] = new Option(manualRokus[i], manualRokus[i], rokuSelected);
 	}
+	if (manualRokus.length>0) manualSelect.disabled = false;
+	else manualSelect.disabled = true;
 }
 
 
 function loadedImage() {
 	var URL = this.src;
 	scannedRokus.push(getDomainFromUrl(URL));
-	
+	ipCount++;
+	//dbg("ipCount: " + ipCount);
+
 	if(scannedRokus.length<=rokuCount){
 		setConfig('scannedRokus', scannedRokus.join(","));
 		updateSelect();
 	}
-	if (scannedRokus.length>=rokuCount) {
+	if (scannedRokus.length>=rokuCount || ipCount==254) {
 		scanButton.innerHTML="Scan";
+		ipCount=0;
 		scanning = false;
 		stopFindRokus();
 		}
 }
 
+
+function imageError(){
+	ipCount++;
+	//dbg("ipCount: " + ipCount);
+	if(ipCount==254){
+		scanButton.innerHTML="Scan";
+		scanning = false;
+		ipCount = 0;
+		stopFindRokus();
+		if (scannedRokus.length<1)dbg("No Rokus Found. Check your network settings.");
+		}
+	}
 
 function findRokus() {
 	scannedRokus = new Array;
@@ -222,6 +242,7 @@ function findRokus() {
 			images[i] = new Image();
 			var URL = "http://" + myNetwork + "." + i + ":8060/query/icon/11";
 			images[i].onload = loadedImage;
+			images[i].onerror = imageError;
 			images[i].src = URL;
 		}
 	}
@@ -243,6 +264,7 @@ function setRokuCount() {
 }
 
 function setRokuAddress(){
+	this.options[this.selectedIndex].setAttribute("class","selected");
 	rokuAddress = this.options[this.selectedIndex].value;
 	try{
 		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
@@ -287,6 +309,14 @@ function rokupost(action, param){
 	return false;
 }
 
+function launchRemokuWithParams(){
+	var rokupost = document.getElementById('rokupost');
+	params = encodeURIComponent(launchParams.value);
+	rokupost.setAttribute("action", "http://" + rokuAddress + ":8060/launch/dev?videoUrl=" + params );
+	rokupost.submit();
+	return false;
+	}
+
 function rokulaunch(id){
 	rokupost("launch",id);
 	}
@@ -308,6 +338,17 @@ function delayNextQuery(){
 	setTimeout('nextQuery()',200);
 	}
 
+function rokuTextOrDelete(evt){
+	if (!evt)evt = window.event;//IE doesn't pass events as parameters like other browsers
+	if (evt.keyCode == 8){
+		rokupost("keypress","Backspace");
+	} else {
+		rokuText();
+	}
+	
+	
+}	
+	
 function rokuText(){
 	var rokutext =  document.getElementById('rokutext');
 	var text = document.getElementById("textentry").value;
@@ -338,34 +379,35 @@ function _rmAppsCB(apps){
 	var list = "";
 	var applist = document.getElementById("applist");
     appidarray = new Array();
-//     for (i=0;i<apps.length;i++){
-// 	    var li = document.createElement("li");
-// 	    
-// 	    var link = document.createElement("a");
-// 	    link.setAttribute('href','#'+apps[i].id);
-// 	    link.setAttribute('onclick','rokulaunch("' + apps[i].id + '")');
-// 	    link.innerHTML = apps[i].name;
-// 	    
-// 	    var img = document.createElement("img");
-// 	    img.setAttribute('onload','loadRokuImages()');
-// 		img.setAttribute('class','icons');
-// 		img.setAttribute('Id','app' + apps[i].id);
-// 		
-// 		appidarray.push( apps[i].id);
-// 		
-// 		link.appendChild(img);
-// 		li.appendChild(link);
-// 		applist.appendChild(li);
-// 		//dbg (apps[i].name);
-// 	}
-	for (app in apps){
-		var htmlitem = "<li><a href='#" + apps[app].id + "' onclick='rokulaunch(" + apps[app].id + ");'>" +
-		"<img class='icons' id='app" + apps[app].id + "' onload='loadRokuImages()' > " + 
-		apps[app].name + "</a></li>"; 
-		list += htmlitem;
-		appidarray.push( apps[app].id);
+    for (i=0;i<apps.length;i++){
+	    var li = document.createElement("li");
+	    
+	    var link = document.createElement("a");
+	    link.setAttribute('href','#'+apps[i].id);
+	    link.setAttribute('onclick','rokulaunch("' + apps[i].id + '")');
+	    link.innerHTML = apps[i].name;
+	    
+	    var img = document.createElement("img");
+	    img.setAttribute('onload','loadRokuImages()');
+		img.setAttribute('class','icons');
+		img.setAttribute('Id','app' + apps[i].id);
+		
+		appidarray.push( apps[i].id);
+		
+		link.appendChild(img);
+		li.appendChild(link);
+		applist.appendChild(li);
+		//dbg (apps[i].name);
 	}
-	applist.innerHTML = list;
+
+// 	for (app in apps){
+// 		var htmlitem = "<li><a href='#" + apps[app].id + "' onclick='rokulaunch(" + apps[app].id + ");'>" +
+// 		"<img class='icons' id='app" + apps[app].id + "' onload='loadRokuImages()' > " + 
+// 		apps[app].name + "</a></li>"; 
+// 		list += htmlitem;
+// 		appidarray.push( apps[app].id);
+// 	}
+	//applist.innerHTML = list;
 	appid = appidarray.shift();
 	if(appid!=null)document.getElementById("app"+appid).src = 'http://' + rokuAddress +':8060/query/icon/' + appid;
 		
@@ -382,6 +424,8 @@ function launchRemoku(){
 	rokulaunch("dev");
 	}
 
+	
+	
 function getBuild(){
 	if (window.XMLHttpRequest){
 		xmlhttp=new XMLHttpRequest();
@@ -414,6 +458,7 @@ function wipeSettings(){
 //GUI BINDINGS
 function btnDown(){
 	lastBtn = this.id;
+	//add graphical feed back here
 	rokupost("keydown",this.id);
 }
 function btnUp(){
@@ -449,6 +494,133 @@ function textOnOff(){
 	setTimeout(hideURLbar, 100);
 }
 
+function textModeOff(){keyboardMode=false;}
+function textModeOn() {keyboardMode=true;}
+
+function handleArrowKeyDown(evt) {
+    evt = (evt) ? evt : ((window.event) ? event : null);
+    if (evt && keyboardMode &&  firstDown) {
+	    firstDown = false;
+        switch (evt.keyCode) {
+            case 37:
+                //dbg("left");
+                rokupost("keydown","Left");
+                break;    
+            case 38:
+                //dbg("up");
+                rokupost("keydown","Up");
+                break;    
+            case 39:
+                //dbg("right");
+                rokupost("keydown","Right");
+                break;    
+            case 40:
+                //dbg("down");
+                rokupost("keydown","Down");
+                break;    
+            case 13:
+                //dbg("Enter");
+                rokupost("keydown","Select");
+                break;    
+            case 36:
+                //dbg("Home");
+                rokupost("keydown","Home");
+                break;    
+            case 72:
+                //dbg("Home");
+                rokupost("keydown","Home");
+                break;    
+            case 82:
+                //dbg("Return");
+                rokupost("keydown","Back");
+                break;    
+            case 27:
+                //dbg("Return");
+                rokupost("keydown","Back");
+                break;    
+            case 90:
+                //dbg("Replay");
+                rokupost("keydown","InstantReplay");
+                break;    
+            case 32:
+                //dbg("Play");
+                rokupost("keydown","Play");
+                break;    
+            case 188:
+                //dbg("Rev");
+                rokupost("keydown","Rev");
+                break;    
+            case 190:
+                //dbg("Fwd");
+                rokupost("keydown","Fwd");
+                break;    
+         }
+    }
+}
+
+function handleArrowKeyUp(evt) {
+	firstDown = true;
+    evt = (evt) ? evt : ((window.event) ? event : null);
+    if (evt && keyboardMode) {
+        switch (evt.keyCode) {
+            case 37:
+                //dbg("left");
+                rokupost("keyup","Left");
+                break;    
+            case 38:
+                //dbg("up");
+                rokupost("keyup","Up");
+                break;    
+            case 39:
+                //dbg("right");
+                rokupost("keyup","Right");
+                break;    
+            case 40:
+                //dbg("down");
+                rokupost("keyup","Down");
+                break;    
+            case 13:
+                //dbg("Enter");
+                rokupost("keyup","Select");
+                break;    
+            case 36:
+                //dbg("Home");
+                rokupost("keyup","Home");
+                break;    
+            case 72:
+                //dbg("Home");
+                rokupost("keyup","Home");
+                break;    
+            case 82:
+                //dbg("Return");
+                rokupost("keyup","Back");
+                break;    
+            case 27:
+                //dbg("Return");
+                rokupost("keyup","Back");
+                break;    
+            case 90:
+                //dbg("Replay");
+                rokupost("keyup","InstantReplay");
+                break;    
+            case 32:
+                //dbg("Play");
+                rokupost("keyup","Play");
+                break;    
+            case 188:
+                //dbg("Rev");
+                rokupost("keyup","Rev");
+                break;    
+            case 190:
+                //dbg("Fwd");
+                rokupost("keyup","Fwd");
+                break;    
+         }
+    }
+}
+
+
+
 //END GUI BINDINGS
 //////////////////
 
@@ -468,6 +640,7 @@ var foundRokus = 0;
 var rokuAddress;
 var rokus = [];
 var rokuCount;
+var ipCount = 0;
 var numField;
 var manualInput;
 var manualSelect;
@@ -493,6 +666,9 @@ var startAppsButton;
 var scanForRokuButton;
 var addRokuButton;
 
+var launchButton;
+var launchParams;
+
 var navRemote;
 var navText;	
 var navApps;
@@ -507,6 +683,30 @@ var firstSetupScreen;
 var screenArray = new Array(); 
 
 var useCookies = false;
+var keyboardMode;
+var firstDown = true;
+
+
+
+// Check if a new cache is available on page load.
+window.addEventListener('load', function(e) {
+
+  window.applicationCache.addEventListener('updateready', function(e) {
+    if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+      // Browser downloaded a new app cache.
+      // Swap it in and reload the page to get the new hotness.
+      window.applicationCache.swapCache();
+      if (confirm('A new version of Remoku is available. Load it now?')) {
+        window.location.reload();
+      }
+    } else {
+      // Manifest hasn't changed. Nothing new to serve.
+    }
+  }, false);
+
+}, false);
+
+
 
 window.onload = function(){
 	window.scrollTo(0, 1);
@@ -525,6 +725,7 @@ window.onload = function(){
 	rokuSelect.onchange = setRokuAddress;
 	
 	scannedRokus = getConfig('scannedRokus') ? getConfig('scannedRokus').split(",") : [];
+	keyboardMode = getConfig('keyboardMode') ? getConfig('keyboardMode') : true;
 	octet1 = document.getElementById('octet1');
 	octet2 = document.getElementById('octet2');
 	octet3 = document.getElementById('octet3');
@@ -599,22 +800,30 @@ window.onload = function(){
 		remoteButtons[i].ontouchend = btnUp;
 	}
 	
-	
+	var intViewportHeight = window.innerHeight;
+	screens = document.getElementById("remote");
+	//screens.ontouchmove=preventMove;
+	screens.style.height= intViewportHeight+"px";
 	remoteScreen = document.getElementById("remote");
+	//remoteScreen.ontouchmove=preventMove;
+	remoteTable = document.getElementById("remotetable");
+	//remoteTable.ontouchmove=preventMove;
 	configScreen = document.getElementById("config");
+	//configScreen.ontouchmove=preventMove;
 	textScreen = document.getElementById("text");
 	appsScreen = document.getElementById("apps");
+	//appsScreen.ontouchmove=preventMove;
 	firstSetupScreen = document.getElementById("firstsetup");
 	screenArray = [remoteScreen,appsScreen,configScreen];
 	
 	navRemote = document.getElementById("navremote");
-	navText = document.getElementById("navtext");
+	//navText = document.getElementById("navtext");
 	navApps   = document.getElementById("navapps");
 	navConfig = document.getElementById("navconfig");
     navArray = [navRemote,navApps,navConfig];
     
 	navRemote.onclick = activateButton;
-	navText.onclick = textOnOff;
+	//navText.onclick = textOnOff;
 	navApps.onclick = activateButton;
 	navConfig.onclick = activateButton;
 	
@@ -629,7 +838,19 @@ window.onload = function(){
 	if(!rokuAddress) {
 		 firstSetup();
 	 }
-	 getBuild();
+	launchButton = document.getElementById("lparamdo");
+	launchParams = document.getElementById("lparams");
+	launchButton.onclick = launchRemokuWithParams;
+	
+	textEntryInput = document.getElementById("textentry");
+	textEntryInput.onkeydown = rokuTextOrDelete;
+	textEntryInput.onfocus = textModeOff;
+	textEntryInput.onblur = textModeOn;
+	textEntryInput.enter = rokuText;
+	
+	document.onkeyup = handleArrowKeyUp;
+	document.onkeydown = handleArrowKeyDown;
+	getBuild();
 }
 
 //Hide iPhone URL bar
