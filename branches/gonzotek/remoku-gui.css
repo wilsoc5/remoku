@@ -66,7 +66,7 @@ button{
 	z-index:-1;
 	}
 
-#apps, #remote, #config, #firstsetup{
+#apps, #remote, #config, #firstsetup, #goodies{
 	position: fixed;
 	top:55px;
 	text-align:center;
@@ -74,18 +74,25 @@ button{
 	margin-left:-160px;
 }
 
-#config{
+#config, #apps, #goodies, #firstsetup{
 	width:320px;
 	height:366px;
 	overflow:scroll;
 	-webkit-overflow-scrolling: touch;
-
 	}
-#firstsetup{
-
+	
+#remote{
 	width:320px;
-	height:373px;
+	height:400px;
+	overflow:auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+#remotetable{
+	margin-bottom:40px;
 	}
+	
+
 #text{
 	margin-left:auto;
 	margin-right:auto;
@@ -96,12 +103,7 @@ button{
 	width: 229px; 
 	text-align:center;
 	}
-#apps{
-	width:320px;
-	height:366px;
-	overflow:scroll;
-	-webkit-overflow-scrolling: touch;
-	}
+
 #apps .icons{max-height:75px;}	
 #apps ul{margin:0;padding:0; }
 #apps li{list-style-type: none;  margin-top:5px; margin-left:0; height:100px; padding:0;vertical-align:middle; }
@@ -221,16 +223,7 @@ h2{
 	font-family:serif;
 	}
 
-#remote{
-	width:320px;
-	height:400px;
-	overflow:auto;
-	-webkit-overflow-scrolling: touch;
-}
 
-#remotetable{
-	margin-bottom:40px;
-	}
 
 #navtable{
 	text-align:center;

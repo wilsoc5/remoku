@@ -480,22 +480,8 @@ function activateButton(){
 	setTimeout(hideURLbar, 100);
 }
 
-function textOnOff(){
-	textScreen = document.getElementById("text");
-	if (this.getAttribute("class")=="nav") {
-		this.setAttribute("class", "active nav");
-		textScreen.style.visibility = "visible";
-		textScreen.style.display = "block";
-	} else {
-		this.setAttribute("class", "nav");
-		textScreen.style.visibility = "hidden";
-		textScreen.style.display = "none";
-	}
-	setTimeout(hideURLbar, 100);
-}
-
 function textModeOff(){keyboardMode=false;}
-function textModeOn() {keyboardMode=true;}
+function textModeOn() {keyboardMode=true; }
 
 function handleArrowKeyDown(evt) {
     evt = (evt) ? evt : ((window.event) ? event : null);
@@ -670,14 +656,15 @@ var launchButton;
 var launchParams;
 
 var navRemote;
-var navText;	
+var navText;
+var navGoodies
 var navApps;
 var navConfig;
 var navArray = new Array();
 
 var remoteScreen;
 var configScreen;
-var textScreen;
+var goodiesScreen;
 var appsScreen;
 var firstSetupScreen;
 var screenArray = new Array(); 
@@ -810,22 +797,22 @@ window.onload = function(){
 	//remoteTable.ontouchmove=preventMove;
 	configScreen = document.getElementById("config");
 	//configScreen.ontouchmove=preventMove;
-	textScreen = document.getElementById("text");
+	goodiesScreen = document.getElementById("goodies");
 	appsScreen = document.getElementById("apps");
 	//appsScreen.ontouchmove=preventMove;
 	firstSetupScreen = document.getElementById("firstsetup");
-	screenArray = [remoteScreen,appsScreen,configScreen];
+	screenArray = [remoteScreen,goodiesScreen,appsScreen,configScreen];
 	
 	navRemote = document.getElementById("navremote");
-	//navText = document.getElementById("navtext");
+	navGoodies = document.getElementById("navgoodies");
 	navApps   = document.getElementById("navapps");
 	navConfig = document.getElementById("navconfig");
-    navArray = [navRemote,navApps,navConfig];
+    navArray = [navRemote,navGoodies,navApps,navConfig];
     
 	navRemote.onclick = activateButton;
-	//navText.onclick = textOnOff;
 	navApps.onclick = activateButton;
 	navConfig.onclick = activateButton;
+	navGoodies.onclick = activateButton;
 	
 	sendTextBtn = document.getElementById("sendtext");
 	sendTextBtn.onclick = rokuText;

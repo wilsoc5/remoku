@@ -22,9 +22,9 @@
 	</a>
 	</td>
 	<td>
-	<a  class="active nav" id="navgoodies">
+	<a  class="nav" id="navgoodies">
 	<img class="remoteicons" src="images/goodies.png">
-	<div>Remote</div> 
+	<div>Goodies</div> 
 	</a>
 	</td>
 	<td class="hidden">
@@ -123,6 +123,12 @@
 </table>
 </div>
 
+<div id="goodies" class="hidden">
+	<div class="box" id="goodieLaunch">
+	<h2>Launch Remoku </h2>
+	<label>Launch param</label><input id="lparams" value="videoUrl=VIDURL" /><button id="lparamdo">Launch</button>
+	</div>
+</div>
 
 <div id="apps" class="hidden">
 <ul id="applist">
@@ -170,11 +176,6 @@
 		<button id="startremoku">Launch Remoku Channel</button><br>Then<br>
 		<button id="loadapps">Load Channel List</button>
 	</div>
-	<div class="box hidden" id="goodies">
-	<h2>Goodies</h2>
-	<label>Launch param</label><input id="lparams" value="videoUrl=VIDURL" /><button id="lparamdo">Launch</button>
-	</div>
-	
 	<div class="box" id="debug">
 		<h2>Remoku Info</h2>
 		<a href="http://help.remoku.tv/" target="_blank">Help</a><br>
