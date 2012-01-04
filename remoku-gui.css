@@ -34,6 +34,7 @@ option{
 .selected{
 	background-color: #101010;
 	color:#E8E8E8;
+	font-weight:bold;
 	}
 
 button{
@@ -43,7 +44,7 @@ button{
 }
 	
 	
-	.box{
+.box{
 	border: 1px solid #E8E8E8;
 	margin: 1px;
 	background-color: #101010;
@@ -66,7 +67,7 @@ button{
 	z-index:-1;
 	}
 
-#apps, #remote, #config, #firstsetup, #goodies{
+#apps, #remote, #config, #firstsetup, #goodies, #about{
 	position: fixed;
 	top:55px;
 	text-align:center;
@@ -74,7 +75,31 @@ button{
 	margin-left:-160px;
 }
 
-#config, #apps, #goodies, #firstsetup{
+#remotespopup{
+	position: fixed;
+	top:55px;
+	text-align:left;
+	left:50%;
+	margin-left:-160px;
+	background-color: rgba(23,23,23, 0.5);
+	}
+
+#remotespopup ul{margin:0;padding:0; }
+
+#remotespopup li{
+	background-color: rgba(23,23,23, 0.5);
+	list-style-type: none;
+	font-size:20px;
+	font-style:none;
+	margin-top:5px;
+	margin-left:5px;
+	margin-right:5px;
+	height:30px;
+	padding-top:10px;
+	vertical-align:middle;
+}
+#remotespopup li span{font-size:10px;}
+#config, #apps, #goodies, #firstsetup, #about{
 	width:320px;
 	height:366px;
 	overflow:scroll;
@@ -146,7 +171,9 @@ button{
 	display:none;
 	visibility:hidden;
 	}	
-	
+#lkey{
+	width:50px;
+	}	
 .address{
 	width:25px;
 	}
@@ -190,6 +217,7 @@ img{
 	border-width: 0px;
 	float:left;
 	-webkit-touch-callout:none;
+	-webkit-user-select: none;
 }
 
 td,tr{
