@@ -2,7 +2,7 @@
 <html manifest="cache.manifest">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <link rel="apple-touch-startup-image" href="remoku-splash.png" />
@@ -17,32 +17,32 @@
   <tr>
 	<td>
 	<a class="active nav" id="navremote">
+	<div>Remote</div>
 	<img class="remoteicons" id="navremoteimg" src="images/DPad.png" >
-	<div>Remote</div> 
 	</a>
 	</td>
 	<td>
 	<a class="nav" id="navgoodies">
+	<div>Goodies</div>
 	<img class="remoteicons" src="images/goodies.png">
-	<div>Goodies</div> 
 	</a>
 	</td>
 	<td class="hidden">
 	<a class="nav" id="navapps"> 
-	<img class="remoteicons" src="images/application_view_tile.png">
 	<div>Channels</div> 
+	<img class="remoteicons" src="images/application_view_tile.png">
 	</a>
 	</td>
 	<td>
 	<a  class="nav" id="navconfig"> 
-	<img class="remoteicons" src="images/setting_tools.png">
 	<div>Settings</div> 
+	<img class="remoteicons" src="images/setting_tools.png">
 	</a>
 	</td>
 	<td>
 	<a  class="nav" id="navabout"> 
-	<img class="remoteicons" src="images/about.png">
 	<div>About</div> 
+	<img class="remoteicons" src="images/about.png">
 	</a>
 	</td>
   <tr>
@@ -53,7 +53,7 @@
 	<tr>
 		<td colspan="3">
 			<div id="text">
-				<span id="searchline"><input id="textentry" type="text"><button id="sendtext">Send</button></span>
+				<span id="searchline"><input id="textentry" type="text" tabindex="1"><button id="sendtext">Send</button></span>
 			</div>
 		</td>
 	</tr>
@@ -85,7 +85,7 @@
 			<table >
 				<tr>
 					<td><img src="images/left.png" class="link" id="Left"></td>
-					<td><img src="images/ok.png" class="link" id="Select"></td>
+					<td><img src="images/ok.png" class="link" id="Select" tabindex="2"></td>
 					<td><img src="images/right.png" class="link" id="Right"></td>
 				</tr>
 			</table>
@@ -130,10 +130,24 @@
 </div>
 
 <div id="goodies" class="hidden">
-	<div class="box" id="goodieLaunch">
+	<div class="box" id="shoutcast">
+	<h2>Launch Shoutcast Channel</h2>
+	<label>Station Name:</label><input id="sc_name" value="My Station"><br>
+	<label>Station URL:</label><input id="sc_url" value="http://my.shoutcast.url/station.pls" />
+	<button id="sc_launch">Launch Shoutcast</button>
+	</div>
+	<div class="box" id="macros">
+	<h2>Macros</h2>
+	<button id="dev_macro">Developer Screen</button><br>
+	<button id="ver_macro">Channel Version Info</button><br>
+	<button id="bro_macro">Bit Rate Override Screen</button><br>
+	<button id="cor_macro">Dump Core</button><br>
+	</div>
+	<div class="box hidden" id="goodieLaunch">
 	<h2>Launch Remoku Channel</h2>
 	<label>Add launch parameter</label><br>
-	<input id="lkey" value="videoUrl">=<input id="lvalue" value="http://video.ted.com/talks/podcast/CraigVenter_2008_480.mp4" /><button id="lparamdo">Add</button>
+	<input id="lkey" value="videoUrl">=<input id="lvalue" value="http://video.ted.com/talks/podcast/CraigVenter_2008_480.mp4" />
+	<button id="lparamdo">Add</button>
 	</div>
 </div>
 
@@ -190,6 +204,7 @@
 	<div class="box" id="debug">
 		<h2>Remoku Info</h2>
 		<a href="http://help.remoku.tv/" target="_blank">Help</a><br>
+		<div id="ver" class="box"></div>
 		<div id="dbgOut"></div>
 		<button id="wipesettings">Wipe Settings</button>
 	</div>
@@ -205,7 +220,7 @@
 <div id="firstsetup" class="hidden">
 	<div class="box">
 		<h2>This looks like the first time you've used Remoku.</h2>
-		To begin, click the settings icon above and enter your network details.<br><br>If you are not sure what to do, try just clicking the scan button.
+		To begin, click the settings icon above and enter your network details.<br><br>If you are not sure what to do, try just clicking the scan button and look for <a href="http://help.remoku.tv">help</a> under the About icon.
 	</div>
 </div>
 </div>

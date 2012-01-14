@@ -84,6 +84,13 @@ function dbg(log){
 	dbgOut.innerHTML += log + "<br><br>";	
 }
 
+function ver(log){
+	if (console.log) console.log(log);
+	//else alert (log);
+	ver = document.getElementById("ver");
+	ver.innerHTML = log;	
+}
+
 //function: include(array, obj)
 
 //include([1,2,3,4], 3); // true
@@ -397,6 +404,60 @@ function rokupost(action, param){
 	return false;
 }
 
+//macros
+// Rev Play Fwd InstantReplay Info Down Left Select Right Up Back Home
+
+// Bit rate override screen: Home 5x, Rewind 3x, FastForward 2x
+// Home,Home,Home,Home,Home,Rev,Rev,Rev,Fwd,Fwd
+
+// Dump Core: Home 5x, Up, Rewind 2x
+// Home,Home,Home,Home,Home,Up,Rev,Rev
+
+// Channel Version Info: Home 3x, Up 2x, Left, Right, Left, Right, Left
+// Home,Home,Home,Up,Up,Left,Right,Left,Right,Left
+
+// Developer Settings Page: Home 3x, Up 2x, Right, Left, Right, Left, Right
+// Home,Home,Home,Up,Up,Right,Left,Right,Left,Right
+
+function sendSequence(cmds){
+	if (cmds.length>0){
+		rokupost("keypress", cmds.shift() );
+		setTimeout(function(){sendSequence(cmds);}, 750);
+	}
+}
+
+function macroDevScreen(){
+	var cmds = "Home,Home,Home,Up,Up,Right,Left,Right,Left,Right".split(",");
+	sendSequence(cmds);
+	}
+
+function macroDumpCore(){
+	var cmds = "Home,Home,Home,Home,Home,Up,Rev,Rev,Fwd,Fwd".split(",");
+	sendSequence(cmds);
+	}
+
+function macroBRO(){
+	var cmds = "Home,Home,Home,Home,Home,Rev,Rev,Rev,Fwd,Fwd".split(",");
+	sendSequence(cmds);
+	}
+
+function macroChannelVersions(){
+	var cmds = "Home,Home,Home,Up,Up,Left,Right,Left,Right,Left".split(",");
+	sendSequence(cmds);
+	}
+
+
+//ECP APPS
+function launchShoutCast(){
+	var rokupost = document.getElementById('rokupost');
+	//params = launchKey.value + "=" + encodeURIComponent(launchValue.value);
+	params = "name=" + escape(shoutCastNameInput.value) + "&url=" + escape(shoutCastUrlInput.value).split("/").join("%2F");
+	rokupost.setAttribute("action", "http://" + rokuAddress + ":8060/launch/2115?" + params );
+	rokupost.submit();
+	return false;
+	}
+
+
 function launchRemokuWithParams(){
 	var rokupost = document.getElementById('rokupost');
 	params = launchKey.value + "=" + encodeURIComponent(launchValue.value);
@@ -410,40 +471,69 @@ function rokulaunch(id){
 	}
 
 
-function nextQuery(){
-	var rokutext =  document.getElementById('rokutext');
-	var text = document.getElementById("textentry").value;
-	if(text){
-		var letter = text.slice(0,1);
-		rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + escape(letter));
-		rokutext.submit();
-		text = text.slice(1);
-		document.getElementById("textentry").value = text
-		return false;
-		}
-	}
-function delayNextQuery(){
-	setTimeout('nextQuery()',200);
-	}
-
-function rokuTextOrDelete(evt){
+function rokuDeleteOrBlur(evt){
 	if (!evt)evt = window.event;//IE doesn't pass events as parameters like other browsers
 	if (evt.keyCode == 8){
 		rokupost("keypress","Backspace");
-	} else {
-		rokuText();
 	}
-	
-	
+	else if (evt.keyCode == 27){
+		this.blur();
+	}
+	else if(evt.keyCode==13){
+		if (document.getElementById("textentry").value==""){
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "Enter");
+			rokutext.submit();
+			this.blur();
+		}
+	}
 }	
+
+// function rokuDeleteorBlur(evt){
+// 	if (!evt)evt = window.event;//IE doesn't pass events as parameters like other browsers
+// 	if (evt.keyCode == 8){
+// 		rokupost("keypress","Backspace");
+// 	}
+// 	else if (evt.keyCode == 27){
+// 		this.blur();
+// 	}
+// 	else {
+// 		rokuText();
+// 	}
+// }	
+
+
+function delayNextQuery(){
+	setTimeout('rokuText()',200);
+	}
 	
 function rokuText(){
 	var rokutext =  document.getElementById('rokutext');
 	var text = document.getElementById("textentry").value;
+//	dbg(text);
 	if(text){
 		var letter = text.slice(0,1);
 		text = text.slice(1);
-		rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + escape(letter));
+		//Handle the few characters Roku needs encoded beyond escape();
+		if(letter=="/"){ 
+//			dbg(letter);
+			letter = "%2f";
+//			dbg("  " + letter);
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + letter);
+		} else if(letter=="@"){ 
+//			dbg(letter);
+			letter = "%40";
+//			dbg("  " + letter);
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + letter);
+		} else if(letter=="+"){ 
+//			dbg(letter);
+			letter = "%2b";
+//			dbg("  " + letter);
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + letter);
+		} else {
+//			dbg(letter);
+//			dbg("  " + escape(letter));
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + encodeURIComponent(letter));
+		}
 		rokutext.submit();
 		document.getElementById("textentry").value = text
 		}
@@ -521,9 +611,9 @@ function getBuild(){
 			if (xmlhttp.readyState==4 && xmlhttp.status==200){
 				var response = xmlhttp.responseText;
 				response = response.split("\n");
-				var channel = response[1].substr(1);
-				var build = response[2].substr(1);
-				dbg(channel + build);
+				var channel = response[2].substr(1);
+				var build = "Build date: " + response[3].substr(1);
+				ver("Remoku<br>" + channel + "<br>" + build);
 				}
 			}
 		xmlhttp.open("GET","cache.manifest",true);
@@ -641,6 +731,10 @@ function handleArrowKeyDown(evt) {
             case 90:
                 //dbg("Replay");
                 rokupost("keydown","InstantReplay");
+                break;    
+            case 73:
+                //dbg("Info");
+                rokupost("keydown","Info");
                 break;    
             case 32:
                 //dbg("Play");
@@ -806,6 +900,10 @@ var launchButton;
 var launchValue;
 var launchKey;
 
+var shoutCastNameInput;
+var shoutCastUrlInput;
+var shoutCastLaunchButton;
+
 var navRemote;
 var navGoodies
 var navApps;
@@ -833,9 +931,11 @@ var longtouch;
 var remote0;
 
 // Check if a new cache is available on page load.
+if(window.addEventListener){
 window.addEventListener('load', function(e) {
 
-  window.applicationCache.addEventListener('updateready', function(e) {
+  if(window.applicationCache){ 
+	window.applicationCache.addEventListener('updateready', function(e) {
     if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
       // Browser downloaded a new app cache.
       // Swap it in and reload the page to get the new hotness.
@@ -847,9 +947,9 @@ window.addEventListener('load', function(e) {
       // Manifest hasn't changed. Nothing new to serve.
     }
   }, false);
-
+ }
 }, false);
-
+}
 
 
 window.onload = function(){
@@ -953,8 +1053,14 @@ window.onload = function(){
 	}
 	
 	var intViewportHeight = window.innerHeight;
+	//dbg(intViewportHeight);
 	screens = document.getElementById("remote");
-	screens.style.height= intViewportHeight+"px";
+	if(intViewportHeight<419){
+		intViewportHeight+=40
+		screens.style.height = intViewportHeight+"px";
+		remoteTable = document.getElementById("remotetable");
+		remoteTable.style.marginBottom = 40+"px";
+	}
 	remoteScreen = document.getElementById("remote");
 	goodiesScreen = document.getElementById("goodies");
 	appsScreen = document.getElementById("apps");
@@ -1002,13 +1108,38 @@ window.onload = function(){
 	if(!rokuAddress) {
 		 firstSetup();
 	 }
+	 
 	launchButton = document.getElementById("lparamdo");
 	launchValue = document.getElementById("lvalue");
 	launchKey = document.getElementById("lkey");
 	launchButton.onclick = launchRemokuWithParams;
 	
+	shoutCastNameInput = document.getElementById("sc_name");
+	shoutCastUrlInput = document.getElementById("sc_url");
+	shoutCastLaunchButton = document.getElementById("sc_launch");
+	shoutCastLaunchButton.onclick = launchShoutCast;
+	
+	MacroDevButton = document.getElementById("dev_macro");
+	MacroDevButton.onclick = macroDevScreen;
+	
+	MacroCoreButton = document.getElementById("cor_macro");
+	MacroCoreButton.onclick = macroDumpCore;
+	
+	MacroBroButton = document.getElementById("bro_macro");
+	MacroBroButton.onclick = macroBRO;
+	
+	MacroVerButton = document.getElementById("ver_macro");
+	MacroVerButton.onclick = macroChannelVersions;
+
+	
+	
+	
+	
+	
 	textEntryInput = document.getElementById("textentry");
-	textEntryInput.onkeydown = rokuTextOrDelete;
+	textEntryInput.onkeyup = rokuDeleteOrBlur;
+	textEntryInput.onkeypress = rokuText;
+	
 	textEntryInput.onfocus = textModeOff;
 	textEntryInput.onblur = textModeOn;
 	textEntryInput.enter = rokuText;
@@ -1020,7 +1151,7 @@ window.onload = function(){
 }
 
 //Hide iPhone URL bar
-addEventListener("load", function(){setTimeout(hideURLbar, 100);}, false);
+if(window.addEventListener) window.addEventListener("load", function(){setTimeout(hideURLbar, 100);}, false);
 function hideURLbar(){
     window.scrollTo(0, 1);
 	}

@@ -40,13 +40,18 @@ option{
 button{
 	background-color:#101010;
 	color:#E8E8E8;
-	height:20px;
+	height:25px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	margin:5px;
 }
 	
 	
 .box{
 	border: 1px solid #E8E8E8;
 	margin: 1px;
+	margin-bottom:10px;
 	background-color: #101010;
 	}
 .remoteicons{
@@ -69,7 +74,7 @@ button{
 
 #apps, #remote, #config, #firstsetup, #goodies, #about{
 	position: fixed;
-	top:55px;
+	top:50px;
 	text-align:center;
 	left:50%;
 	margin-left:-160px;
@@ -102,7 +107,7 @@ button{
 #config, #apps, #goodies, #firstsetup, #about{
 	width:320px;
 	height:366px;
-	overflow:scroll;
+	overflow:auto;
 	-webkit-overflow-scrolling: touch;
 	}
 	
@@ -114,7 +119,7 @@ button{
 }
 
 #remotetable{
-	margin-bottom:40px;
+	/*margin-bottom:40px;*/
 	}
 	
 
@@ -176,6 +181,11 @@ button{
 	}	
 .address{
 	width:25px;
+	}
+	
+#num{
+	width:25px;
+	height:25px;
 	}
 .maddress{
 	width:115px;
@@ -258,7 +268,7 @@ h2{
 	left:50%;
 	margin-left:-160px;
 	position:fixed;
-	margin-top:5px;
+	margin-top:3px;
     border-width: 0px;
 	border-spacing:0px ;
 	border-style: none;
