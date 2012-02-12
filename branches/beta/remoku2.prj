@@ -1,0 +1,20 @@
+<project version="Crimson Editor 3.60">
+	<localfile path="C:\remoku-svn\apps.xml" />
+	<localfile path="C:\remoku-svn\cache.manifest" />
+	<localfile path="C:\remoku-svn\chrome_extension_popup.html" />
+	<localfile path="C:\remoku-svn\index.html" />
+	<localfile path="C:\remoku-svn\manifest.json" />
+	<localfile path="C:\remoku-svn\remoku-gui.css" />
+	<localfile path="C:\remoku-svn\remoku-gui.js" />
+</project>
+
+<workspace version="Crimson Editor 3.60">
+	<localfile path="C:\remoku-svn\index.html" linenum="186" placement="0:1:-1:-1:-8:-30:75:75:899:485" />
+	<localfile path="C:\remoku-svn\remoku-gui.css" linenum="35" placement="0:1:-1:-1:-8:-30:150:150:1255:525" />
+	<localfile path="C:\remoku-svn\cache.manifest" linenum="2" placement="0:1:-1:-1:-8:-30:175:175:1280:550" />
+	<localfile path="C:\remoku-svn\remoku-gui.js" linenum="342" placement="2:3:-1:-1:-8:-30:0:0:1105:375" />
+	<localfile path="C:\remoku-svn\apps.xml" linenum="1" placement="0:1:-1:-1:-8:-30:150:150:1255:525" />
+	<localfile path="C:\remoku-svn\manifest.json" linenum="8" placement="0:1:-1:-1:-8:-30:200:200:1400:662" />
+	<localfile path="C:\remoku-svn\chrome_extension_popup.html" linenum="12" placement="0:1:-1:-1:-8:-30:0:0:1200:462" />
+</workspace>
+
