@@ -1,0 +1,12 @@
+{
+  "name": "Remoku",
+  "description": "Control your Roku with a web app.",
+  "version": "1.2",
+  "browser_action": {
+  "default_icon": "Remoku Chrome Icon.png",
+  "default_popup": "chrome_extension_popup.html"
+   },
+  "icons": {
+    "128": "Remoku_128.png"
+  }
+}
