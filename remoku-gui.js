@@ -17,7 +17,7 @@ function isBadBrowser(){
 	//Blacklisted browsers claim to support localStorage, but don't follow spec
 	
 	//Fluid claims to support localStorage, but clears it when app is quit
-	if (navigator.userAgent.indexOf('FluidApp')!=-1) return true;
+	//if (navigator.userAgent.indexOf('FluidApp')!=-1) return true;
 	
 	//Older browsers might not have localStorage support
 	if (!localStorage.getItem) return true;
@@ -79,16 +79,16 @@ function readCookie(name) {
 }
 
 function dbg(log){
-	//if (typeof console!=undefined) console.log(log);
+	if (console.log) console.log(log);
 	//else alert (log);
 	dbgOut.innerHTML += log + "<br><br>";	
 }
 
-function ver(channel, build){
-	var slicescript = "window.external.addToFavoritesBar('http://remoku.tv/', 'Remoku', 'slice');"
-	var webslice = '<a onclick="' + slicescript +'">Remoku</a>' + '<br>' + channel + '<br>' + build;
+function ver(log){
+	if (console.log) console.log(log);
+	//else alert (log);
 	ver = document.getElementById("ver");
-	ver.innerHTML = webslice;	
+	ver.innerHTML = log;	
 }
 
 //function: include(array, obj)
@@ -194,11 +194,6 @@ function updateSelect() {
 			}	
 			remoteUl.appendChild(remoteLis[i]);
 		}
-	}
-	if(rokuSelect.length>0){
-		controlContainer.setAttribute("class","box visible");
-	} else {
-		controlContainer.setAttribute("class","hidden");
 	}
 	remotesPopup.appendChild(remoteUl);
 	if(rokuAddress==undefined || rokuAddress=="")rokuAddress=rokus[0];
@@ -322,9 +317,11 @@ function cancelImage(i) {
 	
 	
 function findRokus() {
+	scannedRokus = new Array;
+	setConfig('scannedRokus',scannedRokus.join(","));
+	setRokuCount();
+	updateSelect();
 	if(!scanning){
-		scannedRokus = new Array;
-		setRokuCount();
 		this.innerHTML="Stop";
 		scanResults.setAttribute("class", "visible");
 		scanResults.innerHTML = "Scanning " + (254-ipCount) +  " addresses. " + scannedRokus.length + " Rokus found.";
@@ -348,8 +345,6 @@ function findRokus() {
 		ipPos = 255;
 		ipCount = 0;
 		stopFindRokus();
-		setConfig('scannedRokus',scannedRokus.join(","));
-		updateSelect();
 	}
 }
 
@@ -618,7 +613,7 @@ function getBuild(){
 				response = response.split("\n");
 				var channel = response[2].substr(1);
 				var build = "Build date: " + response[3].substr(1);
-				ver(channel, build);
+				ver("Remoku<br>" + channel + "<br>" + build);
 				}
 			}
 		xmlhttp.open("GET","cache.manifest",true);
@@ -858,7 +853,6 @@ function canceltouchshowRemotes(){
 //////////////////////
 //BEGIN INITIALIZATION
 
-var controlContainer;
 var rokuSelect;
 var myNetwork;
 var octet1;
@@ -973,8 +967,6 @@ window.onload = function(){
 	wipeSettingsButton = document.getElementById("wipesettings");
 	wipeSettingsButton.onclick = wipeSettings;
 	
-	controlContainer = document.getElementById("controlcontainer");
-	
 	rokuSelect = document.getElementById("rokus");
 	rokuSelect.onchange = setRokuAddress;
 	
@@ -1062,7 +1054,7 @@ window.onload = function(){
 	
 	var intViewportHeight = window.innerHeight;
 	dbg(intViewportHeight);
-	var screens = document.getElementById("remote");
+	screens = document.getElementById("remote");
 	if(intViewportHeight<419){
 		intViewportHeight+=40
 		dbg(intViewportHeight);

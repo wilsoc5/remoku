@@ -184,8 +184,8 @@ button{
 	}
 	
 #num{
-	width:40px;
-	height:28px;
+	width:25px;
+	height:25px;
 	}
 .maddress{
 	width:115px;
@@ -281,9 +281,3 @@ h2{
 text-align:center;	
 margin:0;
 }
-
-#helplink{
-	font-size:20px;
-	color:white;
-	margin:50px;
-	}
