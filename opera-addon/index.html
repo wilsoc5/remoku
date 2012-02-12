@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<head>
+		<script>
+		window.addEventListener("load", function() {
+			var ToolbarUIItemProperties = {
+				disabled: false,
+				title: "Remoku",
+				icon: "icons/button.png",
+				popup: {
+					href: "http://remoku.tv",
+					width: "320px",
+					height: "480px"
+					}
+			}
+			var theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
+			opera.contexts.toolbar.addItem( theButton );
+		}, false);
+		</script>
+	</head>
+	<body></body>
+</html>
