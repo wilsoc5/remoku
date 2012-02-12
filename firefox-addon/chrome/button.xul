@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://remoku/content/button.css" type="text/css"?>
+
+<overlay id="remoku_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script type="application/x-javascript" src="chrome://remoku/content/button.js"/>
+    <popupset>
+        <menupopup id="remoku_menu_popup">
+            <menuitem label="Remoku Help" oncommand="gBrowser.selectedTab = gBrowser.addTab('http://help.remoku.tv/');" />
+        </menupopup>
+
+        <panel id="remoku_popup" noautohide="false" flex="1" noautofocus="true">
+            <browser type="content" src="http://remoku.tv/beta" width="320px" height="480px" id="remokuFrame" name="remoku_frame"/>
+            <!-- label control="vvvname" value="Name:"/><textbox id="vvvname"/ -->
+        </panel>
+    </popupset>
+
+    <toolbarpalette id="BrowserToolbarPalette">
+        <toolbarbutton
+        id="remoku-button-1"
+        class="toolbarbutton-1 chromeclass-toolbar-additional remoku"
+        context="remoku_menu_popup"
+        oncommand="document.getElementById('remoku_popup').openPopup(document.getElementById('remoku-button-1'), 'after_start', 0, 0, false, false);"
+        label="Remoku"
+        tooltiptext="Remoku: A web app for Roku remote control" />
+    </toolbarpalette>
+</overlay>
