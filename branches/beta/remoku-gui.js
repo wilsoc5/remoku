@@ -13,6 +13,20 @@ if (!Array.unique) Array.prototype.unique = function() {
 	    return r;
 };
 
+function addresstoVarName(address){
+	var splitaddress = address.split(".");
+	var joinedaddress = splitaddress.join("_");
+	return "$" + joinedaddress;
+}
+
+function varNametoAddress(varName){
+	varName = varName.slice(1);
+	var splitName = varName.split("_");
+	var joinedName = splitName.join(".");
+	return joinedName;
+	}
+
+
 function isBadBrowser(){
 	//Blacklisted browsers claim to support localStorage, but don't follow spec
 	
@@ -79,16 +93,16 @@ function readCookie(name) {
 }
 
 function dbg(log){
-	if (console.log) console.log(log);
+	//if (typeof console!=undefined) console.log(log);
 	//else alert (log);
 	dbgOut.innerHTML += log + "<br><br>";	
 }
 
-function ver(log){
-	if (console.log) console.log(log);
-	//else alert (log);
+function ver(channel, build){
+	var slicescript = "window.external.addToFavoritesBar('http://remoku.tv/', 'Remoku', 'slice');"
+	var webslice = '<a onclick="' + slicescript +'">Remoku</a>' + '<br>' + channel + '<br>' + build;
 	ver = document.getElementById("ver");
-	ver.innerHTML = log;	
+	ver.innerHTML = webslice;	
 }
 
 //function: include(array, obj)
@@ -170,6 +184,7 @@ function updateSelect() {
 	}
 	remotesPopup.innerHTML="";
 	var remoteUl = document.createElement("ul");
+	remoteUl.id = "remotepopupul"
 	var remoteLis = [];
 	rokus  = scannedRokus.concat(manualRokus).unique();
 	
@@ -180,9 +195,10 @@ function updateSelect() {
 				setConfig('rokuAddress', rokuAddress);
 			}
 			var rokuSelected = rokuAddress==rokus[i] ? true : false;
-			rokuSelect.options[i] = new Option(rokus[i], rokus[i], rokuSelected, rokuSelected);
+			var thisRokuName =  namedRokus && namedRokus[rokus[i]] ? namedRokus[rokus[i]] : rokus[i];
+			rokuSelect.options[i] = new Option(thisRokuName, rokus[i], rokuSelected, rokuSelected);
 			remoteLis[i] = document.createElement("li");
-			remoteLis[i].innerHTML = rokus[i];
+			remoteLis[i].innerHTML = namedRokus && namedRokus[rokus[i]] ? namedRokus[rokus[i]] : rokus[i];
 			if(rokuSelected)remoteLis[i].setAttribute("class","selected");
 			remoteLis[i].id="remote"+ [i];
 			remoteLis[i].onclick = function(){
@@ -194,6 +210,11 @@ function updateSelect() {
 			}	
 			remoteUl.appendChild(remoteLis[i]);
 		}
+	}
+	if(rokuSelect.length>0){
+		controlContainer.setAttribute("class","box visible");
+	} else {
+		controlContainer.setAttribute("class","hidden");
 	}
 	remotesPopup.appendChild(remoteUl);
 	if(rokuAddress==undefined || rokuAddress=="")rokuAddress=rokus[0];
@@ -240,6 +261,19 @@ function buildManualRokusMenu(){
 	else manualSelect.disabled = true;
 }
 
+function nameRoku(){
+	dbg("nameRoku()");
+	var curRokuName = rokuName.value;
+	namedRoku = {name : curRokuName , address : rokuAddress};
+	dbg(namedRoku.name + " : " + namedRoku.address);
+	dbg(addresstoVarName(namedRoku.address) + " : " + namedRoku.name);
+	namedRokus[rokuAddress] = rokuName.value;
+	setConfig("namedRokus", JSON.stringify(namedRokus));
+	dbg(namedRokus[rokuAddress]);
+	dbg("stringify: " + JSON.stringify(namedRokus));
+	//dbg("in and out:" + varNametoAddress(addresstoVarName(namedRoku.address)));
+	updateSelect();
+}
 
 function loadedImage() {
 	var URL = this.src;
@@ -317,11 +351,9 @@ function cancelImage(i) {
 	
 	
 function findRokus() {
-	scannedRokus = new Array;
-	setConfig('scannedRokus',scannedRokus.join(","));
-	setRokuCount();
-	updateSelect();
 	if(!scanning){
+		scannedRokus = new Array;
+		setRokuCount();
 		this.innerHTML="Stop";
 		scanResults.setAttribute("class", "visible");
 		scanResults.innerHTML = "Scanning " + (254-ipCount) +  " addresses. " + scannedRokus.length + " Rokus found.";
@@ -345,6 +377,8 @@ function findRokus() {
 		ipPos = 255;
 		ipCount = 0;
 		stopFindRokus();
+		setConfig('scannedRokus',scannedRokus.join(","));
+		updateSelect();
 	}
 }
 
@@ -361,14 +395,13 @@ function setRokuCount() {
 function setRokuAddress(){
 	this.options[this.selectedIndex].setAttribute("class","selected");
 	rokuAddress = this.options[this.selectedIndex].value;
-	try{
-		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
-	}catch(err){
-		apps = [];	
-	}
-	if(apps)_rmAppsCB(apps);
+	//remotesPopup.innerHTML="";
+	//var remoteUl = document.getElementById("remotepopupul");
+	//var remoteLis = [];
+
 	setConfig('rokuAddress', rokuAddress);
-	}
+	updateSelect();
+}
 
 function firstSetup(){
 	for(i=0;i<screenArray.length;i++){
@@ -613,7 +646,7 @@ function getBuild(){
 				response = response.split("\n");
 				var channel = response[2].substr(1);
 				var build = "Build date: " + response[3].substr(1);
-				ver("Remoku<br>" + channel + "<br>" + build);
+				ver(channel, build);
 				}
 			}
 		xmlhttp.open("GET","cache.manifest",true);
@@ -853,6 +886,7 @@ function canceltouchshowRemotes(){
 //////////////////////
 //BEGIN INITIALIZATION
 
+var controlContainer;
 var rokuSelect;
 var myNetwork;
 var octet1;
@@ -870,6 +904,9 @@ var ipCount = 0;
 var numField;
 var manualInput;
 var manualSelect;
+var rokuName;
+var namerokuButton;
+var namedRokus = {};
 
 var scannedRokus = [];
 var manualRokus = [];
@@ -967,10 +1004,13 @@ window.onload = function(){
 	wipeSettingsButton = document.getElementById("wipesettings");
 	wipeSettingsButton.onclick = wipeSettings;
 	
+	controlContainer = document.getElementById("controlcontainer");
+	
 	rokuSelect = document.getElementById("rokus");
 	rokuSelect.onchange = setRokuAddress;
 	
 	scannedRokus = getConfig('scannedRokus') ? getConfig('scannedRokus').split(",") : [];
+	
 	keyboardMode = getConfig('keyboardMode') ? getConfig('keyboardMode') : true;
 	octet1 = document.getElementById('octet1');
 	octet2 = document.getElementById('octet2');
@@ -1003,15 +1043,29 @@ window.onload = function(){
 	removeButton.onclick = removeRoku;
 	addButton = document.getElementById('addroku');
 	addButton.onclick = addRoku;
+
+	rokuName = document.getElementById('rokuname');
+	namerokuButton = document.getElementById('nameroku');
+	namerokuButton.onclick = nameRoku;
+	
 	remotesPopup = document.getElementById("remotespopup");
+	
+	try{
+		namedRokus = JSON.parse(getConfig('namedRokus')) ? JSON.parse(getConfig('namedRokus')) : {};
+		dbg(JSON.stringify(namedRokus));
+	} catch (err) {
+		namedRokus = {};
+	}
 
 	if(manualRokus.length>0) buildManualRokusMenu();
 	updateSelect();
 	try{
-		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
+		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'));
 	}catch(err){
 		apps = [];	
 	}
+	
+	
 	
 	rokupostframe.name="rokuresponse"
 	rokupostframe.id="rokuresponse";
@@ -1054,7 +1108,7 @@ window.onload = function(){
 	
 	var intViewportHeight = window.innerHeight;
 	dbg(intViewportHeight);
-	screens = document.getElementById("remote");
+	var screens = document.getElementById("remote");
 	if(intViewportHeight<419){
 		intViewportHeight+=40
 		dbg(intViewportHeight);
