@@ -9,7 +9,7 @@
         </menupopup>
 
         <panel id="remoku_popup" noautohide="false" flex="1" noautofocus="true">
-            <browser type="content" src="http://remoku.tv/beta" width="320px" height="480px" id="remokuFrame" name="remoku_frame"/>
+            <browser type="content" src="http://remoku.tv/" width="320px" height="480px" id="remokuFrame" name="remoku_frame"/>
             <!-- label control="vvvname" value="Name:"/><textbox id="vvvname"/ -->
         </panel>
     </popupset>
