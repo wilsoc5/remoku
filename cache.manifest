@@ -1,7 +1,7 @@
 CACHE MANIFEST
 #Remoku Web App
-#Beta Channel
-#February 14, 2012 09:08:16 AM 
+#Dev Channel
+#February 14, 2012 07:34:55 PM 
 #
 NETWORK:
 *
@@ -13,8 +13,10 @@ apple-touch-icon-precomposed.png
 apple-touch-icon.png
 favicon.png
 favicon.ico
+remoku-splash.png
 images/about.png
 images/application_view_tile.png
+images/arrow_open.gif
 images/back.png
 images/bottom_edge.png
 images/bottom_left_corner.png
@@ -24,14 +26,13 @@ images/DPad.png
 images/goodies.png
 images/home.png
 images/info.png
-images/keyboard_magnify.png
+images/keyboard.png
 images/left.png
 images/left_edge.png
 images/next.png
 images/ok.png
 images/play.png
 images/previous.png
-images/remote.png
 images/replay.png
 images/right.png
 images/right_edge.png
