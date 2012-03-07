@@ -4,12 +4,41 @@
 <overlay id="remoku_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script type="application/x-javascript" src="chrome://remoku/content/button.js"/>
     <popupset>
-        <menupopup id="remoku_menu_popup">
+        <menupopup id="remoku_menu_popup" onpopupshowing="
+         try{
+			remoku.channel = Services.prefs.getCharPref('extensions.remoku.channel');
+	     } catch(err) { }
+        if(remoku.channel!=''){
+        	document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/' + remoku.channel);
+        }
+        Components.utils.reportError('switch');
+		switch(remoku.channel)	
+		{
+		case 'beta':
+		  getElementById('remokuMenuBeta').setAttribute('checked','true');
+		  break;
+		case 'dev':
+		  getElementById('remokuMenuDev').setAttribute('checked','true');
+		  break;
+		case 'prev':
+		  getElementById('remokuMenuPrev').setAttribute('checked','true');
+		  break;
+		default:
+		  Components.utils.reportError('stable');
+		  getElementById('remokuMenuStable').setAttribute('checked','true');
+		  getElementById('remokuMenuStable').setAttribute('Label','Stable Checked');
+		}
+        ">
             <menuitem label="Remoku Help" oncommand="gBrowser.selectedTab = gBrowser.addTab('http://help.remoku.tv/');" />
+            <menuseparator/>
+            <menuitem type="radio" id="remokuMenuStable" label="Use Stable Channel" oncommand="Components.utils.import('resource://gre/modules/Services.jsm');document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/');Services.prefs.setCharPref('extensions.remoku.channel', '');"/>
+            <menuitem type="radio" id="remokuMenuBeta" label="Use Beta Channel" oncommand="Components.utils.import('resource://gre/modules/Services.jsm');document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/beta');Services.prefs.setCharPref('extensions.remoku.channel', 'beta');"/>
+            <menuitem type="radio" id="remokuMenuDev" label="Use Dev Channel" oncommand="Components.utils.import('resource://gre/modules/Services.jsm');document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/dev');Services.prefs.setCharPref('extensions.remoku.channel', 'dev');"/>
+            <menuitem type="radio" id="remokuMenuPrev" label="Use Previous Channel" oncommand="Components.utils.import('resource://gre/modules/Services.jsm');document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/prev');Services.prefs.setCharPref('extensions.remoku.channel', 'prev');"/>
         </menupopup>
 
         <panel id="remoku_popup" noautohide="false" flex="1" noautofocus="true">
-            <browser type="content" src="http://remoku.tv/" width="320px" height="480px" id="remokuFrame" name="remoku_frame"/>
+            <browser type="content" src="http://remoku.tv/" width="340px" height="500px" id="remokuFrame" name="remoku_frame"/>
             <!-- label control="vvvname" value="Name:"/><textbox id="vvvname"/ -->
         </panel>
     </popupset>

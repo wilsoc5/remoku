@@ -3,7 +3,7 @@ if (typeof remoku == "undefined") {
   var remoku = {  
     init : function() {  
 	    var firstrun = Services.prefs.getBoolPref("extensions.remoku.installed");
-		var curVersion = "0.0.0";
+		var curVersion = "1.4";
 		if (!firstrun) {
 		  Services.prefs.setBoolPref("extensions.remoku.installed", true);
 		    remoku.installButton("nav-bar", "remoku-button-1");
@@ -14,10 +14,10 @@ if (typeof remoku == "undefined") {
 		    if (curVersion > installedVersion) {
 		      Services.prefs.setCharPref("extensions.remoku.installedVersion", curVersion);
 		    }
-		  } catch (ex) {
+		  } catch (err) {
 		  }
 		}
-	    },
+   },
 	installButton : function(toolbarId, id, afterId){
 		if (!document.getElementById(id)) {
         var toolbar = document.getElementById(toolbarId);
@@ -33,7 +33,8 @@ if (typeof remoku == "undefined") {
         if (toolbarId == "addon-bar")
             toolbar.collapsed = false;
     	}	
-	}
+	},
+	channel : ""
   };  
 };
 
