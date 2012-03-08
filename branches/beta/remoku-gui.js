@@ -585,7 +585,7 @@ function rokuText(){
 			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + encodeURIComponent(letter));
 		}
 		rokutext.submit();
-		document.getElementById("textentry").value = text
+		document.getElementById("textentry").value = text;
 		}
 	}	
 	
@@ -1106,37 +1106,7 @@ window.onload = function(){
 	}catch(err){
 		apps = [];	
 	}
-	
-	
-	
-	rokupostframe.name="rokuresponse"
-	rokupostframe.id="rokuresponse";
-	rokupostframe.style.visibility="hidden";
-	rokupostframe.style.display="none";
-	rokupostframe = document.body.appendChild(rokupostframe);
-
-	rokutextframe.name="rokutextresponse"
-	rokutextframe.id="rokutextresponse";
-	rokutextframe.style.visibility="hidden";
-	rokutextframe.style.display="none";
-	rokutextframe.onload = delayNextQuery;
-	rokutextframe = document.body.appendChild(rokutextframe);
-	
-	rokupostform.style.visibility="hidden";
-	rokupostform.style.display="none";
-	rokupostform.id="rokupost";
-	rokupostform.method="post";
-	rokupostform.target="rokuresponse";
-	rokupostform = document.body.appendChild(rokupostform);
-	
-	rokutextform.style.visibility="hidden";
-	rokutextform.style.display="none";
-	rokutextform.id="rokutext";
-	rokutextform.method="post";
-	rokutextform.target="rokutextresponse";
-	rokutextform = document.body.appendChild(rokutextform);
-	
-	
+		
 	remoteButtons = getElementsByClass("link");
 	for(var i=0; i<remoteButtons.length; i++){
 		if (is_touch_device()){
@@ -1233,22 +1203,48 @@ window.onload = function(){
 	macroInput = document.getElementById("custommacroinput");
 	macroInput.onfocus = textModeOff;
 	macroInput.onblur = textModeOn;
-	
-	
-	
-	
+		
+	document.onkeyup = handleArrowKeyUp;
+	document.onkeydown = handleArrowKeyDown;
+	if(apps)_rmAppsCB(apps);
+
 	textEntryInput = document.getElementById("textentry");
+	textEntryInput.value = "";
 	textEntryInput.onkeyup = rokuDeleteOrBlur;
 	textEntryInput.onkeypress = rokuText;
 	
 	textEntryInput.onfocus = textModeOff;
 	textEntryInput.onblur = textModeOn;
 	textEntryInput.enter = rokuText;
-	
-	document.onkeyup = handleArrowKeyUp;
-	document.onkeydown = handleArrowKeyDown;
-	if(apps)_rmAppsCB(apps);
 
+	rokupostframe.name="rokuresponse"
+	rokupostframe.id="rokuresponse";
+	rokupostframe.style.visibility="hidden";
+	rokupostframe.style.display="none";
+	rokupostframe = document.body.appendChild(rokupostframe);
+
+	rokutextframe.name="rokutextresponse"
+	rokutextframe.id="rokutextresponse";
+	rokutextframe.style.visibility="hidden";
+	rokutextframe.style.display="none";
+	rokutextframe.onload = delayNextQuery;
+	rokutextframe = document.body.appendChild(rokutextframe);
+	
+	rokupostform.style.visibility="hidden";
+	rokupostform.style.display="none";
+	rokupostform.id="rokupost";
+	rokupostform.method="post";
+	rokupostform.target="rokuresponse";
+	rokupostform = document.body.appendChild(rokupostform);
+	
+	rokutextform.style.visibility="hidden";
+	rokutextform.style.display="none";
+	rokutextform.id="rokutext";
+	rokutextform.method="post";
+	rokutextform.target="rokutextresponse";
+	rokutextform = document.body.appendChild(rokutextform);
+
+	
 }
 
 //Hide iPhone URL bar
