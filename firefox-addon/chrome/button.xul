@@ -48,7 +48,14 @@
         id="remoku-button-1"
         class="toolbarbutton-1 chromeclass-toolbar-additional remoku"
         context="remoku_menu_popup"
-        oncommand="document.getElementById('remoku_popup').openPopup(document.getElementById('remoku-button-1'), 'after_start', 0, 0, false, false);"
+        oncommand="
+         try{
+			remoku.channel = Services.prefs.getCharPref('extensions.remoku.channel');
+	     } catch(err) { }
+        if(remoku.channel!=''){
+        	document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/' + remoku.channel);
+        }
+        document.getElementById('remoku_popup').openPopup(document.getElementById('remoku-button-1'), 'after_start', 0, 0, false, false);"
         label="Remoku"
         tooltiptext="Remoku: A web app for Roku remote control" />
     </toolbarpalette>
