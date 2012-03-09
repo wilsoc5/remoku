@@ -2,19 +2,43 @@
 <html>
 	<head>
 		<script>
-		window.addEventListener("load", function() {
+		function changeChannel(){
+			this.popup.href = setChannel();
+		};
+		
+		function setChannel(){
+		switch(widget.preferences.channel){
+			case 'beta':
+			  var src = 'http://remoku.tv/beta';
+			  break;
+			case 'dev':
+			  var src = 'http://remoku.tv/dev';
+			  break;
+			case 'prev':
+			  var src = 'http://remoku.tv/prev';
+			  break;
+			default:
+			  var src = 'http://remoku.tv/';
+		    }
+			return src;
+		}
+			window.addEventListener("load", function() {
+				src = setChannel();
 			var ToolbarUIItemProperties = {
 				disabled: false,
 				title: "Remoku",
 				icon: "icons/button.png",
 				popup: {
-					href: "http://remoku.tv",
-					width: "320px",
-					height: "480px"
+					href: src,
+					width: "340px",
+					height: "500px"
 					}
 			}
 			var theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
 			opera.contexts.toolbar.addItem( theButton );
+			
+			theButton.addEventListener('click',changeChannel,false);
+			
 		}, false);
 		</script>
 	</head>
