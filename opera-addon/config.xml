@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="https://addons.opera.com/addons/extensions/details/remoku/" version="1.0">
+<widget xmlns="http://www.w3.org/ns/widgets" id="https://addons.opera.com/addons/extensions/details/remoku/" version="1.1">
   <name>Remoku</name>
   <icon src="icons/icon.png"/>
-  <license>Copyright 2012 gonzotek. All rights reserved.</license>
-  <author href="http://remoku.tv" email="remoku@remoku.tv">gonzotek</author>
+  <license href="http://www.opensource.org/licenses/bsd-license.php">Copyright 2012 A. Cassidy Napoli. All rights reserved.</license>
+  <author href="http://remoku.tv" email="remoku@remoku.tv">A. Cassidy Napoli</author>
   <update-description href="https://extension-updates.opera.com/api/w3c-wd1/update/768188c4-8dd4-4a8f-b939-6122aafb9ec2/"/>
   <description xml:lang="en">A web app for Roku remote control.</description>
 </widget>
