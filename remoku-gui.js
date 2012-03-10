@@ -13,11 +13,35 @@ if (!Array.unique) Array.prototype.unique = function() {
 	    return r;
 };
 
+
+//Return an array of the ancestors of an element
+function parents(node) {
+  var nodes = [];
+  for (; node; node = node.parentNode) {
+    nodes.unshift(node);
+  }
+  return nodes;
+}
+
+function addresstoVarName(address){
+	var splitaddress = address.split(".");
+	var joinedaddress = splitaddress.join("_");
+	return "$" + joinedaddress;
+}
+
+function varNametoAddress(varName){
+	varName = varName.slice(1);
+	var splitName = varName.split("_");
+	var joinedName = splitName.join(".");
+	return joinedName;
+	}
+
+
 function isBadBrowser(){
 	//Blacklisted browsers claim to support localStorage, but don't follow spec
 	
 	//Fluid claims to support localStorage, but clears it when app is quit
-	if (navigator.userAgent.indexOf('FluidApp')!=-1) return true;
+	//if (navigator.userAgent.indexOf('FluidApp')!=-1) return true;
 	
 	//Older browsers might not have localStorage support
 	if (!localStorage.getItem) return true;
@@ -131,7 +155,7 @@ function getElementsByClass(theClass, classType)
 }
 
 function preventMove(event){
-	event.preventDefault();
+	if (window.innerHeight>450 && remoteScreen.getAttribute("class")=="visible")event.preventDefault();
 }
 
 function stopFindRokus() {
@@ -169,7 +193,9 @@ function updateSelect() {
 		rokuSelect.remove(rokuSelect.length -1);
 	}
 	remotesPopup.innerHTML="";
+	lowerRemotesPopup.innerHTML="";
 	var remoteUl = document.createElement("ul");
+	remoteUl.id = "remotepopupul"
 	var remoteLis = [];
 	rokus  = scannedRokus.concat(manualRokus).unique();
 	
@@ -180,17 +206,21 @@ function updateSelect() {
 				setConfig('rokuAddress', rokuAddress);
 			}
 			var rokuSelected = rokuAddress==rokus[i] ? true : false;
-			rokuSelect.options[i] = new Option(rokus[i], rokus[i], rokuSelected, rokuSelected);
+			var thisRokuName =  namedRokus && namedRokus[rokus[i]] ? namedRokus[rokus[i]] : rokus[i];
+			rokuSelect.options[i] = new Option(thisRokuName, rokus[i], rokuSelected, rokuSelected);
 			remoteLis[i] = document.createElement("li");
-			remoteLis[i].innerHTML = rokus[i];
+			remoteLis[i].innerHTML = namedRokus && namedRokus[rokus[i]] ? namedRokus[rokus[i]] : rokus[i];
 			if(rokuSelected)remoteLis[i].setAttribute("class","selected");
 			remoteLis[i].id="remote"+ [i];
 			remoteLis[i].onclick = function(){
 				remotesPopup.setAttribute("class","hidden");
+				lowerRemotesPopup.setAttribute("class","hidden");
 				var rokuId = (this.id).substring(6);
 				rokuAddress=rokus[rokuId];
 				setConfig('rokuAddress', rokuAddress);	
 				updateSelect();
+				rokuName.value = namedRokus[rokuAddress] ? namedRokus[rokuAddress] : "";
+				nameLine.innerHTML = rokuName.value ? rokuName.value : rokuAddress;
 			}	
 			remoteUl.appendChild(remoteLis[i]);
 		}
@@ -201,6 +231,7 @@ function updateSelect() {
 		controlContainer.setAttribute("class","hidden");
 	}
 	remotesPopup.appendChild(remoteUl);
+	lowerRemotesPopup.appendChild(remoteUl);
 	if(rokuAddress==undefined || rokuAddress=="")rokuAddress=rokus[0];
 }
 
@@ -245,6 +276,22 @@ function buildManualRokusMenu(){
 	else manualSelect.disabled = true;
 }
 
+function doNameRoku(evt){
+	if(!evt)evt = window.event;
+	if (evt.keyCode == 13){
+		nameRoku();
+	} else {
+		return false;
+	}
+}
+
+
+function nameRoku(){
+	var curRokuName = rokuName.value;
+	namedRokus[rokuAddress] = rokuName.value;
+	setConfig("namedRokus", JSON.stringify(namedRokus));
+	updateSelect();
+}
 
 function loadedImage() {
 	var URL = this.src;
@@ -366,20 +413,18 @@ function setRokuCount() {
 function setRokuAddress(){
 	this.options[this.selectedIndex].setAttribute("class","selected");
 	rokuAddress = this.options[this.selectedIndex].value;
-	try{
-		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
-	}catch(err){
-		apps = [];	
-	}
-	if(apps)_rmAppsCB(apps);
 	setConfig('rokuAddress', rokuAddress);
-	}
+	rokuName.value = namedRokus[rokuAddress] ? namedRokus[rokuAddress] : "";
+	nameLine.innerHTML = rokuName.value ? rokuName.value : rokuAddress;
+	updateSelect();
+}
 
 function firstSetup(){
 	for(i=0;i<screenArray.length;i++){
 		screenArray[i].setAttribute("class", "hidden");
 		}
 	firstSetupScreen.setAttribute("class", "visible");
+	configScreen.setAttribute("class", "visible");
 	//var setup = confirm("It looks like you haven't used Remoku before. Would you like to begin by scanning for Rokus?");
 	//if(setup){
 	//	rokuCount = prompt ("Ok, how many Rokus do you own?", "1");
@@ -540,7 +585,7 @@ function rokuText(){
 			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + encodeURIComponent(letter));
 		}
 		rokutext.submit();
-		document.getElementById("textentry").value = text
+		document.getElementById("textentry").value = text;
 		}
 	}	
 	
@@ -634,6 +679,7 @@ function wipeSettings(){
 	setConfig("scannedRokus", "");
 	setConfig("manualRokus", "");
 	setConfig("rokuCount", "");
+	setConfig("namedRokus","");
 	//setConfig("apps", "");
 	if (localStorage.clear) localStorage.clear();
 }
@@ -666,7 +712,7 @@ function rmousedownRemoteBtn(e){
 		if (!e) var e = window.event;
 		if (e.which) rightclick = (e.which == 3);
 		else if (e.button) rightclick = (e.button == 2);
-		if(rightclick)showRemotes();
+		//if(rightclick)showRemotes();
 		//dbg('Rightclick: ' + rightclick); // true or false
 		//return false;
 	}
@@ -831,6 +877,7 @@ function showRemotesAfterDelay(){
 	
 function showRemotes(){
 	remotesPopup.setAttribute("class", "visible");
+	lowerRemotesPopup.setAttribute("class", "visible");
 	remotesPopupTimer = null;
 }
 
@@ -876,6 +923,9 @@ var ipCount = 0;
 var numField;
 var manualInput;
 var manualSelect;
+var rokuName;
+var namerokuButton;
+var namedRokus = {};
 
 var scannedRokus = [];
 var manualRokus = [];
@@ -931,10 +981,15 @@ var firstDown = true;
 
 var remotesPopupTimer;
 var remotesPopup;
+var lowerRemotesPopup;
 var clearTimer;
 var longtouch;
 
+var MacroInput;
+
 var remote0;
+
+var nameLine;
 
 // Check if a new cache is available on page load.
 if(window.addEventListener){
@@ -965,9 +1020,9 @@ window.onload = function(){
 	dbg(navigator.userAgent);
 	if(isBadBrowser()){
 		useCookies = true;
-		dbg("Browser lacks localStorage support, falling back to cookies. Channel lists cannot be saved.");
+		dbg("Browser lacks localStorage support, falling back to cookies.");
 	} else {
-		dbg("Browser has localStorage support. Channel lists will be saved.");
+		dbg("Browser has localStorage support.");
 	}
 
 	wipeSettingsButton = document.getElementById("wipesettings");
@@ -979,13 +1034,21 @@ window.onload = function(){
 	rokuSelect.onchange = setRokuAddress;
 	
 	scannedRokus = getConfig('scannedRokus') ? getConfig('scannedRokus').split(",") : [];
+	
 	keyboardMode = getConfig('keyboardMode') ? getConfig('keyboardMode') : true;
 	octet1 = document.getElementById('octet1');
 	octet2 = document.getElementById('octet2');
 	octet3 = document.getElementById('octet3');
 	octet1.onchange = setMyNetwork;
+	octet1.onfocus = textModeOff;
+	octet1.onblur = textModeOn;
 	octet2.onchange = setMyNetwork;
+	octet2.onfocus = textModeOff;
+	octet2.onblur = textModeOn;
 	octet3.onchange = setMyNetwork;
+	octet3.onfocus = textModeOff;
+	octet3.onblur = textModeOn;
+	
 	
 	myNetwork = getConfig('myNetwork') ? getConfig('myNetwork') : "192.168.1";
 	var octets = myNetwork.split(".");
@@ -1005,22 +1068,155 @@ window.onload = function(){
 	
 	rokuAddress = getConfig('rokuAddress');
 	manualInput = document.getElementById('maddress');
+	manualInput.onfocus = textModeOff;
+	manualInput.onblur = textModeOn;
+
 	manualSelect = document.getElementById('manualrokus');
 	manualRokus = getConfig('manualRokus') ? getConfig('manualRokus').split(",") : [];
 	removeButton = document.getElementById('removeroku');
 	removeButton.onclick = removeRoku;
 	addButton = document.getElementById('addroku');
 	addButton.onclick = addRoku;
+
+	rokuName = document.getElementById('rokuname');
+	rokuName.onfocus = textModeOff;
+	rokuName.onblur = textModeOn;
+	rokuName.onkeyup = doNameRoku;
+	namerokuButton = document.getElementById('nameroku');
+	namerokuButton.onclick = nameRoku;
+	
 	remotesPopup = document.getElementById("remotespopup");
+	lowerRemotesPopup = document.getElementById("lowerremotespopup");
+	
+	try{
+		namedRokus = JSON.parse(getConfig('namedRokus')) ? JSON.parse(getConfig('namedRokus')) : {};
+		//dbg(JSON.stringify(namedRokus));
+	} catch (err) {
+		namedRokus = {};
+	}
 
 	if(manualRokus.length>0) buildManualRokusMenu();
 	updateSelect();
+	rokuName.value = namedRokus[rokuAddress] ? namedRokus[rokuAddress] : "Remoku";
+	nameLine = document.getElementById("nameline");
+	nameLine.innerHTML = rokuName.value ? rokuName.value : rokuAddress;
+	nameLine.onclick = showRemotes;
 	try{
-		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'))
+		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'));
 	}catch(err){
 		apps = [];	
 	}
+		
+	remoteButtons = getElementsByClass("link");
+	for(var i=0; i<remoteButtons.length; i++){
+		if (is_touch_device()){
+			remoteButtons[i].ontouchstart = btnTouchDown;
+			remoteButtons[i].ontouchend = btnTouchUp;
+		} else {
+			remoteButtons[i].onmousedown = btnDown;
+			remoteButtons[i].onmouseup = btnUp;
+		}
+	}
 	
+	var intViewportHeight = window.innerHeight;
+	//dbg(intViewportHeight);
+	var screens = document.getElementById("remote");
+// 	if(intViewportHeight<419){
+// 		intViewportHeight+=40
+// 		dbg(intViewportHeight);
+// 		screens.style.height = intViewportHeight+"px";
+// 		remoteTable = document.getElementById("remotetable");
+// 		remoteTable.style.marginBottom = 40+"px";
+// 	}
+	remoteScreen = document.getElementById("remote");
+	goodiesScreen = document.getElementById("goodies");
+	appsScreen = document.getElementById("apps");
+	configScreen = document.getElementById("config");
+	aboutScreen =  document.getElementById("about");
+	firstSetupScreen = document.getElementById("firstsetup");
+	screenArray = [remoteScreen,goodiesScreen,appsScreen,configScreen,aboutScreen];
+	
+	navRemote = document.getElementById("navremote");
+	navRemoteImg = document.getElementById("navremoteimg");
+	navGoodies = document.getElementById("navgoodies");
+	navApps   = document.getElementById("navapps");
+	navConfig = document.getElementById("navconfig");
+	navAbout = document.getElementById("navabout");
+    navArray = [navRemote,navGoodies,navApps,navConfig,navAbout];
+    
+// 	if(is_touch_device()){
+// 		dbg("Touch Device Detected");
+// 		navRemoteImg.ontouchstart = touchshowRemotes; 
+// 		navRemoteImg.ontouchend = canceltouchshowRemotes;
+// 	} else {
+// 		navRemote.onclick = activateButton;
+// 		navRemote.onmousedown = rmousedownRemoteBtn;
+// 		navRemote.onmouseup = function(){return false;};
+// 		navRemote.oncontextmenu = function(){return false;};
+// 	}	
+	navRemote.onclick = activateButton;
+	navApps.onclick = activateButton;
+	navConfig.onclick = activateButton;
+	navGoodies.onclick = activateButton;
+	navAbout.onclick = activateButton;
+	
+	sendTextBtn = document.getElementById("sendtext");
+	sendTextBtn.onclick = rokuText;
+	
+	loadAppsButton = document.getElementById("loadapps");
+	loadAppsButton.onclick = rokuApps;
+
+	startAppsButton = document.getElementById("startremoku");
+	startAppsButton .onclick = launchRemoku;
+	if(!rokuAddress) {
+		 firstSetup();
+	 }
+	 
+	launchButton = document.getElementById("lparamdo");
+	launchValue = document.getElementById("lvalue");
+	launchKey = document.getElementById("lkey");
+	launchButton.onclick = launchRemokuWithParams;
+	
+	shoutCastNameInput = document.getElementById("sc_name");
+	shoutCastNameInput.onfocus = textModeOff;
+	shoutCastNameInput.onblur = textModeOn;
+
+	shoutCastUrlInput = document.getElementById("sc_url");
+	shoutCastUrlInput.onfocus = textModeOff;
+	shoutCastUrlInput.onblur = textModeOn;
+
+	shoutCastLaunchButton = document.getElementById("sc_launch");
+	shoutCastLaunchButton.onclick = launchShoutCast;
+	
+	MacroDevButton = document.getElementById("dev_macro");
+	MacroDevButton.onclick = macroDevScreen;
+	
+	MacroCoreButton = document.getElementById("cor_macro");
+	MacroCoreButton.onclick = macroDumpCore;
+	
+	MacroBroButton = document.getElementById("bro_macro");
+	MacroBroButton.onclick = macroBRO;
+	
+	MacroVerButton = document.getElementById("ver_macro");
+	MacroVerButton.onclick = macroChannelVersions;
+
+	macroInput = document.getElementById("custommacroinput");
+	macroInput.onfocus = textModeOff;
+	macroInput.onblur = textModeOn;
+		
+	document.onkeyup = handleArrowKeyUp;
+	document.onkeydown = handleArrowKeyDown;
+	if(apps)_rmAppsCB(apps);
+
+	textEntryInput = document.getElementById("textentry");
+	textEntryInput.value = "";
+	textEntryInput.onkeyup = rokuDeleteOrBlur;
+	textEntryInput.onkeypress = rokuText;
+	
+	textEntryInput.onfocus = textModeOff;
+	textEntryInput.onblur = textModeOn;
+	textEntryInput.enter = rokuText;
+
 	rokupostframe.name="rokuresponse"
 	rokupostframe.id="rokuresponse";
 	rokupostframe.style.visibility="hidden";
@@ -1047,111 +1243,8 @@ window.onload = function(){
 	rokutextform.method="post";
 	rokutextform.target="rokutextresponse";
 	rokutextform = document.body.appendChild(rokutextform);
-	
-	
-	remoteButtons = getElementsByClass("link");
-	for(var i=0; i<remoteButtons.length; i++){
-		if (is_touch_device()){
-			remoteButtons[i].ontouchstart = btnTouchDown;
-			remoteButtons[i].ontouchend = btnTouchUp;
-		} else {
-			remoteButtons[i].onmousedown = btnDown;
-			remoteButtons[i].onmouseup = btnUp;
-		}
-	}
-	
-	var intViewportHeight = window.innerHeight;
-	dbg(intViewportHeight);
-	var screens = document.getElementById("remote");
-	if(intViewportHeight<419){
-		intViewportHeight+=40
-		dbg(intViewportHeight);
-		screens.style.height = intViewportHeight+"px";
-		remoteTable = document.getElementById("remotetable");
-		remoteTable.style.marginBottom = 40+"px";
-	}
-	remoteScreen = document.getElementById("remote");
-	goodiesScreen = document.getElementById("goodies");
-	appsScreen = document.getElementById("apps");
-	configScreen = document.getElementById("config");
-	aboutScreen =  document.getElementById("about");
-	firstSetupScreen = document.getElementById("firstsetup");
-	screenArray = [remoteScreen,goodiesScreen,appsScreen,configScreen,aboutScreen];
-	
-	navRemote = document.getElementById("navremote");
-	navRemoteImg = document.getElementById("navremoteimg");
-	navGoodies = document.getElementById("navgoodies");
-	navApps   = document.getElementById("navapps");
-	navConfig = document.getElementById("navconfig");
-	navAbout = document.getElementById("navabout");
-    navArray = [navRemote,navGoodies,navApps,navConfig,navAbout];
-    
-	if(is_touch_device()){
-		dbg("Touch Device Detected");
-		navRemoteImg.ontouchstart = touchshowRemotes; 
-		navRemoteImg.ontouchend = canceltouchshowRemotes;
-	} else {
-		navRemote.onclick = activateButton;
-		navRemote.onmousedown = rmousedownRemoteBtn;
-		navRemote.onmouseup = function(){return false;};
-		navRemote.oncontextmenu = function(){return false;};
-	}	
-	navApps.onclick = activateButton;
-	navConfig.onclick = activateButton;
-	navGoodies.onclick = activateButton;
-	navAbout.onclick = activateButton;
-	
-	sendTextBtn = document.getElementById("sendtext");
-	sendTextBtn.onclick = rokuText;
-	
-	loadAppsButton = document.getElementById("loadapps");
-	loadAppsButton.onclick = rokuApps;
-
-	startAppsButton = document.getElementById("startremoku");
-	startAppsButton .onclick = launchRemoku;
-	if(!rokuAddress) {
-		 firstSetup();
-	 }
-	 
-	launchButton = document.getElementById("lparamdo");
-	launchValue = document.getElementById("lvalue");
-	launchKey = document.getElementById("lkey");
-	launchButton.onclick = launchRemokuWithParams;
-	
-	shoutCastNameInput = document.getElementById("sc_name");
-	shoutCastUrlInput = document.getElementById("sc_url");
-	shoutCastLaunchButton = document.getElementById("sc_launch");
-	shoutCastLaunchButton.onclick = launchShoutCast;
-	
-	MacroDevButton = document.getElementById("dev_macro");
-	MacroDevButton.onclick = macroDevScreen;
-	
-	MacroCoreButton = document.getElementById("cor_macro");
-	MacroCoreButton.onclick = macroDumpCore;
-	
-	MacroBroButton = document.getElementById("bro_macro");
-	MacroBroButton.onclick = macroBRO;
-	
-	MacroVerButton = document.getElementById("ver_macro");
-	MacroVerButton.onclick = macroChannelVersions;
 
 	
-	
-	
-	
-	
-	textEntryInput = document.getElementById("textentry");
-	textEntryInput.onkeyup = rokuDeleteOrBlur;
-	textEntryInput.onkeypress = rokuText;
-	
-	textEntryInput.onfocus = textModeOff;
-	textEntryInput.onblur = textModeOn;
-	textEntryInput.enter = rokuText;
-	
-	document.onkeyup = handleArrowKeyUp;
-	document.onkeydown = handleArrowKeyDown;
-	if(apps)_rmAppsCB(apps);
-
 }
 
 //Hide iPhone URL bar
