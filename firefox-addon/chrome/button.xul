@@ -24,9 +24,7 @@
 		  getElementById('remokuMenuPrev').setAttribute('checked','true');
 		  break;
 		default:
-		  Components.utils.reportError('stable');
 		  getElementById('remokuMenuStable').setAttribute('checked','true');
-		  getElementById('remokuMenuStable').setAttribute('Label','Stable Checked');
 		}
         ">
             <menuitem label="Remoku Help" oncommand="gBrowser.selectedTab = gBrowser.addTab('http://help.remoku.tv/');" />
