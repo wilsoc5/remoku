@@ -5,9 +5,46 @@
 
 ////////////////////////
 //BEGIN HELPER FUNCTIONS
+
+
+
+// addSelectOption
+//
+// Add the single select option to the selection list with the id specified
+//
+function addSelectOption(selectId, value, display) {
+ if (display == null) {
+  display = value;
+ }
+    var anOption = document.createElement('option');
+    anOption.value = value;
+    anOption.innerHTML = display;
+    document.getElementById(selectId).appendChild(anOption);
+    return anOption;
+}
+
+// removeSelectOption
+//
+// Remove the option with the specified value from the list of options
+// in the selection list with the id specified
+//
+function removeSelectOption(selectId, display) {
+ var select = document.getElementById(selectId);
+ var kids = select.childNodes; 
+ var numkids = kids.length; 
+ for (var i = 0; i < numkids; i++) {
+		if (kids[i].innerHTML == display) {
+			select.removeChild(kids[i]);
+			break;
+     }
+    }
+}
+
+
 function changeBackgroundColor(theSelector, parameter){
 	[].every.call( document.styleSheets, function ( sheet ) {
-	    return [].every.call( sheet.cssRules, function ( rule ) {
+		  rules = sheet.rules || sheet.cssRules || [];
+	    return [].every.call( rules, function ( rule ) {
 	        if ( rule.selectorText === theSelector ) {
 	            rule.style.backgroundColor = parameter;
 	            return false;
@@ -17,6 +54,20 @@ function changeBackgroundColor(theSelector, parameter){
 	});	
 }
 
+function changeTextColor(theSelector, parameter){
+	[].every.call( document.styleSheets, function ( sheet ) {
+		  rules = sheet.rules || sheet.cssRules || [];
+	    return [].every.call( rules, function ( rule ) {
+	        if ( rule.selectorText === theSelector ) {
+	            rule.style.color = parameter;
+	            return false;
+	        }
+	        return true;
+	    });
+	});	
+}
+
+//Array.unique polyfill
 if (!Array.unique) Array.prototype.unique = function() {
 	    var o = {}, i, l = this.length, r = [];
 	    for(i=0; i<l;i+=1) o[this[i]] = this[i];
@@ -24,6 +75,9 @@ if (!Array.unique) Array.prototype.unique = function() {
 	    return r;
 };
 
+
+//Object.keys polyfill
+Object.keys=Object.keys||function(o,k,r){r=[];for(k in o)r.hasOwnProperty.call(o,k)&&r.push(k);return r}
 
 //Return an array of the ancestors of an element
 function parents(node) {
@@ -244,6 +298,19 @@ function updateSelect() {
 	remotesPopup.appendChild(remoteUl);
 	lowerRemotesPopup.appendChild(remoteUl);
 	if(rokuAddress==undefined || rokuAddress=="")rokuAddress=rokus[0];
+	fav1Value = getConfig('fav1') ? getConfig('fav1') : '12' ; 
+	favImg1 = document.getElementById("favimg1");
+	if(favImg1)favImg1.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav1Value);
+		
+	fav2Value = getConfig('fav2');
+	favImg2 = document.getElementById("favimg2");
+	fav2Value = getConfig('fav2') ? getConfig('fav2') : '28' ; 
+	if(favImg2)favImg2.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav2Value);
+
+	fav3Value = getConfig('fav3');
+	favImg3 = document.getElementById("favimg3");
+	fav3Value = getConfig('fav3') ? getConfig('fav3') : '2016' ; 
+	if(favImg3)favImg3.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav3Value);
 }
 
 function addRoku(){
@@ -483,35 +550,79 @@ function rokupost(action, param){
 function sendSequence(cmds){
 	if (cmds.length>0){
 		rokupost("keypress", cmds.shift() );
-		setTimeout(function(){sendSequence(cmds);}, 750);
+		setTimeout(function(){
+			sendSequence(cmds);
+			}, 750);
 	}
 }
 
-function macroDevScreen(){
-	var cmds = "Home,Home,Home,Up,Up,Right,Left,Right,Left,Right".split(",");
-	sendSequence(cmds);
+function sendCustomMacro(cmds){
+	if(cmds.length>0){
+		var command = cmds.shift();
+		var cmdAction = Object.keys(command)[0];//need object.keys polyfill for ie7/ie8 support.  worth it?
+		var cmdParam = command[cmdAction];
+		switch(cmdAction){
+			case 'pause':
+				dbg ('pause: ' + cmdParam);
+				setTimeout(function(){sendCustomMacro(cmds);},cmdParam);
+			break;
+			case 'text':
+				cmdParam = rokuMacroText(cmdParam);
+				if(cmdParam)cmds.unshift({text:cmdParam});
+				setTimeout(function(){sendCustomMacro(cmds);},750);
+			break;
+			case 'loop':
+				var loops = cmdParam-2;
+				cmds = JSON.parse("["+macroArea.value+"]");
+				cmds.pop();//remove loop command 
+				for (i=0;i<loops;i++){
+					var tempcmds = JSON.parse("["+macroArea.value+"]");
+					tempcmds.pop();
+					cmds = cmds.concat(tempcmds);
+				}
+				setTimeout(function(){sendCustomMacro(cmds);},750);
+			break;
+			default:
+				//dbg('rokupost: ' + cmdAction + '/' + cmdParam);
+				rokupost(cmdAction, cmdParam);
+				setTimeout(function(){sendCustomMacro(cmds);},750);
+		}
 	}
+}
 
-function macroDumpCore(){
-	var cmds = "Home,Home,Home,Home,Home,Up,Rev,Rev,Fwd,Fwd".split(",");
-	sendSequence(cmds);
-	}
-
-function macroSecretScreen(){
-	var cmds = "Home,Home,Home,Home,Home,Fwd,Fwd,Fwd,Rev,Rev".split(",");
-	sendSequence(cmds);
-	}
-	
-function macroBRO(){
-	var cmds = "Home,Home,Home,Home,Home,Rev,Rev,Rev,Fwd,Fwd".split(",");
-	sendSequence(cmds);
-	}
-
-function macroChannelVersions(){
-	var cmds = "Home,Home,Home,Up,Up,Left,Right,Left,Right,Left".split(",");
-	sendSequence(cmds);
-	}
-
+function rokuMacroText(cmdParam){
+	var rokutext =  document.getElementById('rokutext');
+	var text = cmdParam;
+//	dbg(text);
+	if(text){
+		var letter = text.slice(0,1);
+		text = text.slice(1);
+		//Handle the few characters Roku needs encoded beyond escape();
+		if(letter=="/"){ 
+//			dbg(letter);
+			letter = "%2f";
+//			dbg("  " + letter);
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + letter);
+		} else if(letter=="@"){ 
+//			dbg(letter);
+			letter = "%40";
+//			dbg("  " + letter);
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + letter);
+		} else if(letter=="+"){ 
+//			dbg(letter);
+			letter = "%2b";
+//			dbg("  " + letter);
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + letter);
+		} else {
+//			dbg(letter);
+//			dbg("  " + escape(letter));
+			rokutext.setAttribute("action", "http://" + rokuAddress + ":8060/" + "keypress" + "/" + "LIT_" + encodeURIComponent(letter));
+		}
+		rokutext.submit();
+		dbg (rokutext.getAttribute("action"));
+		return text;
+		}
+	}	
 
 //ECP APPS
 function launchShoutCast(){
@@ -691,12 +802,19 @@ function getBuild(){
 ////////////////////////
 
 function wipeSettings(){
-	setConfig("rokuAddress","");
+	setConfig("rokuAddress", "");
 	setConfig("scannedRokus", "");
 	setConfig("manualRokus", "");
 	setConfig("rokuCount", "");
-	setConfig("namedRokus","");
-	setConfig("bgColor","");
+	setConfig("namedRokus", "");
+	setConfig("bgColor", "");	
+	setConfig("fgColor", "");
+	setConfig("macros", "");
+	setConfig("showFavs", "");
+	setConfig("myNetwork","");
+	setConfig("fav1","");
+	setConfig("fav2","");
+	setConfig("fav3","");
 	//setConfig("apps", "");
 	if (localStorage.clear) localStorage.clear();
 }
@@ -740,7 +858,7 @@ function activateButton(e){
 	firstSetupScreen.setAttribute("class", "hidden");
 		for(i=0;i<navArray.length;i++){
 			if (activeBtn == navArray[i].id){
-				navArray[i].setAttribute("class", "active nav");
+				navArray[i].setAttribute("class", "nav active");
 				screenArray[i].setAttribute("class", "visible");
 			} else {
 				screenArray[i].setAttribute("class", "hidden");
@@ -905,7 +1023,7 @@ function canceltouchshowRemotes(){
 		activeBtn = "navremote";
 		for(i=0;i<navArray.length;i++){
 			if (activeBtn == navArray[i].id){
-				navArray[i].setAttribute("class", "active nav");
+				navArray[i].setAttribute("class", "nav active");
 				screenArray[i].setAttribute("class", "visible");
 			} else {
 				screenArray[i].setAttribute("class", "hidden");
@@ -1008,6 +1126,8 @@ var remote0;
 var nameLine;
 
 var bgcolorInput;
+var fgElements = new Array();
+
 
 // Check if a new cache is available on page load.
 if(window.addEventListener){
@@ -1019,11 +1139,8 @@ window.addEventListener('load', function(e) {
       // Browser downloaded a new app cache.
       // Swap it in and reload the page to get the new hotness.
       window.applicationCache.swapCache();
-      if (confirm('A new version of Remoku is available. Load it now?')) {
-        window.location.reload();
-      }
-    } else {
-      // Manifest hasn't changed. Nothing new to serve.
+      var notifications = document.getElementById('notifications');
+			notifications.setAttribute('class','box');
     }
   }, false);
  }
@@ -1042,7 +1159,14 @@ window.onload = function(){
 	} else {
 		dbg("Browser has localStorage support.");
 	}
-
+	var reloadlink = document.getElementById('reloadlink');
+  reloadlink.onclick = function (){window.location.reload();};
+  var channelStoreMacroButton = document.getElementById('chs_macro');
+  channelStoreMacroButton.onclick = function(){
+	  var launchid = document.getElementById('chstoreappid').value;
+	  rokupost('launch','11?contentId='+launchid);
+	  // /launch/11?contentId=12
+	  };
 	wipeSettingsButton = document.getElementById("wipesettings");
 	wipeSettingsButton.onclick = wipeSettings;
 	
@@ -1096,6 +1220,11 @@ window.onload = function(){
 	addButton = document.getElementById('addroku');
 	addButton.onclick = addRoku;
 
+	var channelsLink = document.getElementById('channelslink');
+		channelsLink.innerHTML = 'Refer to your <a href="http://'+ rokuAddress +':8060/query/apps" target="_blank">installed channels</a> for channel ids.'
+	var channelsLink2 = document.getElementById('channelslink2');
+		channelsLink2.innerHTML = 'Refer to your <a href="http://'+ rokuAddress +':8060/query/apps" target="_blank">installed channels</a> for channel ids.'
+	
 	rokuName = document.getElementById('rokuname');
 	rokuName.onfocus = textModeOff;
 	rokuName.onblur = function(){
@@ -1207,31 +1336,91 @@ window.onload = function(){
 	shoutCastLaunchButton = document.getElementById("sc_launch");
 	shoutCastLaunchButton.onclick = launchShoutCast;
 	
-	MacroDevButton = document.getElementById("dev_macro");
-	MacroDevButton.onclick = macroDevScreen;
-	
-	MacroCoreButton = document.getElementById("cor_macro");
-	MacroCoreButton.onclick = macroDumpCore;
-	
-	MacroSecretButton = document.getElementById("sec_macro");
-	MacroSecretButton.onclick = macroSecretScreen;
-	
-	MacroBroButton = document.getElementById("bro_macro");
-	MacroBroButton.onclick = macroBRO;
-	
-	MacroVerButton = document.getElementById("ver_macro");
-	MacroVerButton.onclick = macroChannelVersions;
 
+	macroSelect = document.getElementById("macroSelect");
+	macroSelect.onchange = function(){
+		macro = this.options[this.selectedIndex].value;
+		macroname = this.options[this.selectedIndex].innerHTML;
+		dbg(macro + macroname);
+		macroInput.value = macroname;
+		macro = macro.substring(1,macro.length-1);
+		macroArea.value = macro;
+		};
+	macros = (getConfig('macros') && getConfig('macros').length>0)?JSON.parse(getConfig('macros')):[
+	{"Email":[{"text":"gonzotek@gmail.com"}]},
+	{"Home":[{"keypress":"Home"}]},
+	{"Developer Screen":[{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Up"},{"keypress":"Up"},{"keypress":"Right"},{"keypress":"Left"},{"keypress":"Right"},{"keypress":"Left"},{"keypress":"Right"}]},
+	{"Dump Core":[{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Up"},{"keypress":"Rev"},{"keypress":"Rev"},{"keypress":"Fwd"},{"keypress":"Fwd"}]},
+	{"Secret Screen":[{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Fwd"},{"keypress":"Fwd"},{"keypress":"Fwd"},{"keypress":"Rev"},{"keypress":"Rev"}]},
+	{"Bit Rate Override":[{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Rev"},{"keypress":"Rev"},{"keypress":"Rev"},{"keypress":"Fwd"},{"keypress":"Fwd"}]},
+	{"Channels Info":[{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Home"},{"keypress":"Up"},{"keypress":"Up"},{"keypress":"Left"},{"keypress":"Right"},{"keypress":"Left"},{"keypress":"Right"},{"keypress":"Left"}]}
+	];
+    for (i=0;i<macros.length;i++){
+	    macro = macros[i];
+		var name = Object.keys(macro)[0];//need object.keys polyfill for ie7/ie8 support.  worth it?
+		var macro = JSON.stringify(macro[name]);
+		addSelectOption("macroSelect", macro, name)
+	    }
 	macroInput = document.getElementById("custommacroinput");
 	macroInput.onfocus = textModeOff;
 	macroInput.onblur = textModeOn;
+
+	macroArea = document.getElementById("macroArea");
+	macroArea.onfocus = textModeOff;
+	macroArea.onblur = textModeOn;
+
+	addMacroButton = document.getElementById("addMacro");
+	addMacroButton.onclick = function() {
+		dbg("add name: " + macroInput.value + "<br> commands: " + macroArea.value);
+	  		macro = {};
+	  		macro[macroInput.value] = JSON.parse("["+macroArea.value+"]");
+	  		dbg(macro[macroInput.value]);
+	  		for(i=0;i<macros.length;i++){
+		  		dbg(macros[i]);
+		  		if (macros[i][macroInput.value]){
+			  		macros[i]=macro;
+			  		macro=null;
+			  		break;
+			  		}
+		  		}
+	  		if(macro!=null){
+		  		macros.push(macro);
+		  		addSelectOption("macroSelect", "["+macroArea.value+"]", macroInput.value);
+		  		} else {
+			  		removeSelectOption("macroSelect",macroInput.value);
+		  		addSelectOption("macroSelect", "["+macroArea.value+"]", macroInput.value);
+			  		}
+	  		setConfig('macros',JSON.stringify(macros));
+	  		
+		};
+	removeMacroButton = document.getElementById("removeMacro");
+		removeMacroButton.onclick = function (){
+			removeSelectOption("macroSelect",macroInput.value);
+			idx = -1;
+			for(i=0;i<macros.length;i++){
+				if (macros[i][macroInput.value])idx=i;
+				}
+			if (idx>-1)macros.splice(idx,1);
+	  	setConfig('macros',JSON.stringify(macros));
+			};
 		
+	runMacroButton = document.getElementById("runCustomMacro");
+	runMacroButton.onclick = function(){
+		dbg("run name: " + macroInput.value + "<br> commands: " + macroArea.value);
+		
+		var cmds = JSON.parse("["+macroArea.value+"]");
+		//Example JSON:
+		// [{"pause":3751},{"keypress":"Left"},{"pause":3752},{"keypress":"Down"},{"pause":3753},{"keypress":"Right"},{"pause":3754},{"keypress":"Up"}]
+		sendCustomMacro(cmds);
+		};
+			
 	document.onkeyup = handleArrowKeyUp;
 	document.onkeydown = handleArrowKeyDown;
 	
 	
 	showFavoritesChkbx = document.getElementById("showFaves");
-	showFavs = getConfig('showFavs')?getConfig('showFavs'):'true';
+	showFavs = getConfig('showFavs')=='false'?getConfig('showFavs'):'true';
+	setConfig('showFavs',showFavs);
 	if(showFavs=='true'){
 		showFavoritesChkbx.checked=true;
 		document.getElementById('favtable').setAttribute('class','');
@@ -1271,7 +1460,7 @@ window.onload = function(){
 	    var favimg = document.createElement("img");
 		favimg.setAttribute('class','favicons');
 		favimg.setAttribute('Id','favimg1');
-		favimg.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav1Value);
+		if(getConfig('showFavs')=='true'){favimg.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav1Value);};
 		favlink.appendChild(favimg);
 	fav1.appendChild(favlink);
 	
@@ -1299,7 +1488,7 @@ window.onload = function(){
 	    var favimg = document.createElement("img");
 		favimg.setAttribute('class','favicons');
 		favimg.setAttribute('Id','favimg2');
-		favimg.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav2Value);
+		if(getConfig('showFavs')=='true'){favimg.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav2Value);};
 		favlink.appendChild(favimg);
 	fav2.appendChild(favlink);
 	
@@ -1326,45 +1515,60 @@ window.onload = function(){
 	    var favimg = document.createElement("img");
 		favimg.setAttribute('class','favicons');
 		favimg.setAttribute('Id','favimg3');
-		favimg.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav3Value);
+		if(getConfig('showFavs')=='true'){favimg.setAttribute('src','http://' + rokuAddress +':8060/query/icon/'+fav3Value);}
 		favlink.appendChild(favimg);
 	fav3.appendChild(favlink);
 	
 	if(apps)_rmAppsCB(apps);
+	
+	//Background
     bgcolorInput = document.getElementById("bgcolor");
     bgcolor = getConfig('bgColor') ? getConfig('bgColor') : "101010";
     bgcolorInput.value = bgcolor;
     changeBackgroundColor('.bgcolor', '#' + bgcolor);
+    txtcolor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
+    navTextColor = Brightness( bgcolor ) < 130 ? 'D0D0D0' : '555555';
+    activeNavTextColor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
+    changeTextColor('.nav', '#' + navTextColor);
+    changeTextColor('.active', '#' + activeNavTextColor);
+    changeTextColor('.bgcolor', '#' + txtcolor);
+    
     bgcolorInput.onfocus = function(){
 	    textModeOff();
 	    bgcolor = bgcolorInput.value;
-		changeBackgroundColor('.bgcolor', '#' + bgcolor);
-		setConfig('bgColor', bgcolor);	
+			changeBackgroundColor('.bgcolor', '#' + bgcolor);
+			txtcolor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
+			changeTextColor('.bgcolor', '#' + txtcolor);
+	    navTextColor = Brightness( bgcolor ) < 130 ? 'D0D0D0' : '555555';
+	    activeNavTextColor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
+	    changeTextColor('.nav', '#' + navTextColor);
+	    changeTextColor('.active', '#' + activeNavTextColor);
+			setConfig('bgColor', bgcolor);	
 	    };
 	bgcolorInput.onblur = function(){
 		textModeOn();
 		}
+		
+		
 	//Foreground objects
 	//input select option button
     fgcolorInput = document.getElementById("fgcolor");
-    fgcolor = getConfig('fgColor') ? getConfig('fgColor') : "101010";
-	changeBackgroundColor('input', '#' + fgcolor);
-	changeBackgroundColor('select', '#' + fgcolor);
-	changeBackgroundColor('option', '#' + fgcolor);
-	changeBackgroundColor('button', '#' + fgcolor);
-	changeBackgroundColor('.selected', '#' + fgcolor);
-	changeBackgroundColor('#rokus', '#' + fgcolor);
-	
+    fgcolor = getConfig('fgColor') ? getConfig('fgColor') : "101010";    
+    fgElements = ['input','textarea','#macroArea','select','option','button','.selected','#rokus'];
+    txtcolor = Brightness( fgcolor ) < 130 ? 'FFFFFF' : '000000';
+    for (var i = 0; i<fgElements.length;i++) {
+	    changeBackgroundColor(fgElements[i], '#' + fgcolor);
+	    changeTextColor(fgElements[i], '#' + txtcolor);
+	    };
     fgcolorInput.value = fgcolor;
     fgcolorInput.onfocus = function(){
 	    textModeOff();
 	    fgcolor = fgcolorInput.value;
-		changeBackgroundColor('input', '#' + fgcolor);
-		changeBackgroundColor('select', '#' + fgcolor);
-		changeBackgroundColor('option', '#' + fgcolor);
-		changeBackgroundColor('button', '#' + fgcolor);
-		changeBackgroundColor('.selected', '#' + fgcolor);
-		changeBackgroundColor('#rokus', '#' + fgcolor);
+	    txtcolor = Brightness( fgcolor ) < 130 ? 'FFFFFF' : '000000';
+	    for (var i = 0; i<fgElements.length;i++) {
+		    changeBackgroundColor(fgElements[i], '#' + fgcolor);
+			changeTextColor(fgElements[i], '#' + txtcolor);
+		    };
 		setConfig('fgColor', fgcolor);
 	    };
 	fgcolorInput.onblur = function(){
