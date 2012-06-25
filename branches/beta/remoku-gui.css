@@ -1,13 +1,15 @@
 *{
 	font-family: arial, sans-serif;
-	}
-	
+ }
+
 .bgcolor{ 	background-color: #101010;
 }
 	
 .fgcolor{ 	background-color: #101010;
 }	
-	
+#txtentry{
+	color:blue;
+	}	
 body{
 	border-width: 0px;
 	color:#E8E8E8;
@@ -18,7 +20,7 @@ body{
 }
 label{
 	/*background-color: #101010;*/
-	color :#E8E8E8;
+	/*color :#E8E8E8;*/
 }
 fieldset{
 	text-align:left;
@@ -32,8 +34,8 @@ input{
 select{
 	-webkit-appearance:none;
 	-moz-appearance:none;
-	background-color: #101010;
-	color: #E8E8E8;
+	/*background-color: #101010;*/
+	/*color: #E8E8E8;*/
 }
 
 option{
@@ -53,8 +55,8 @@ option{
 	}
 
 button{
-	background-color:#101010;
-	color:#E8E8E8;
+	/*background-color:#101010;
+	color:#E8E8E8;*/
 	height:25px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -199,7 +201,6 @@ button{
 	margin-top: 7px;
 	height:20px;
 	background-color:transparent;
-	color:#E8E8E8;
 	border:1px solid #101010;
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
@@ -224,6 +225,11 @@ button{
 	display:none;
 	visibility:hidden;
 	}	
+	
+#chstoreappid{
+	width:25px;
+}	
+	
 #lkey{
 	width:50px;
 	}	
@@ -245,7 +251,8 @@ button{
 	
 .nav{
 	cursor:pointer;
-	color:#E8E8E8;
+		opacity:0.5;
+
 	}	
 .nav img{
 	opacity:0.5;
@@ -253,8 +260,10 @@ button{
 .active img{
 	opacity:1 !important;	
 }
-.active{
-	color:#E8E8E8 !important;
+.active {
+	color:white;
+	opacity:1 !important;	
+
 	}
 .link{
 	cursor:pointer;
@@ -330,12 +339,6 @@ h2{
 text-align:center;	
 margin:0;
 }
-
-#helplink{
-	font-size:20px;
-	color:white;
-	margin:50px;
-	}
 	
 #rokuname{
 	width:90px;
@@ -347,6 +350,7 @@ margin:0;
 	}
 	
 .link{color:white;}
+
 #favtable{
 	text-align:center;
 	left:50%;
@@ -377,3 +381,10 @@ margin:0;
 	display:block;
 	max-height:40px;
 }
+#custommacroinput{
+	width:150px;
+	}
+#macroArea{
+	width:272px;
+	height:100px;
+	}
