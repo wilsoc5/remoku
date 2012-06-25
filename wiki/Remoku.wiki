@@ -4,9 +4,9 @@
 
 Remoku - A Web App for remote control of Roku Players
 
-http://apps4tv.com/remoku
+http://remoku.tv
 
-Copyright 2010, A. Cassidy Napoli and and B. Galliart. All rights reserved. See source for License.
+Copyright 2010-2012, A. Cassidy Napoli. All rights reserved. See source for License.
 
 = What it does=
 
