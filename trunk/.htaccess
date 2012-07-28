@@ -1,1 +1,14 @@
 AddType text/cache-manifest .manifest
+AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript text/cache-manifest
+<ifModule mod_headers.c>
+	<filesMatch "\\.(ico|pdf|flv|jpg|jpeg|png|gif|swf)$">
+		Header set Cache-Control "max-age=2592000, public"
+	</filesMatch>
+  <filesMatch "\.(css|js)$">
+		Header set Cache-Control "max-age=604800, private"
+	</filesMatch>
+	<filesMatch "\.(htm|html|css|js)$">
+		AddDefaultCharset UTF-8
+		DefaultLanguage en-US
+</filesMatch>
+</ifModule>

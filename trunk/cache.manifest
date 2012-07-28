@@ -1,7 +1,7 @@
 CACHE MANIFEST
 #Remoku Web App
 #Stable Channel
-#July 12, 2012 07:46:27 PM 
+#July 26, 2012 05:41:02 PM 
 #
 NETWORK:
 *
@@ -10,6 +10,14 @@ index.html
 remoku-gui.css
 remoku-gui.js
 color-utils.js
+cp/colorPicker.js
+cp/_blank.cur
+cp/_blank.gif
+cp/_horizontal.png
+cp/_icons.png
+cp/_icons.gif
+cp/_patches.png
+cp/_vertical.png
 apple-touch-icon-precomposed.png
 apple-touch-icon.png
 favicon.png
