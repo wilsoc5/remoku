@@ -2,9 +2,11 @@
 //A. Cassidy Napoli
 //Copyright 2012 
 //License: NEW BSD
-//July 30, 2012 03:22:57 PM 
+//
 ////////////////////////
 //BEGIN HELPER FUNCTIONS
+  //list of variable stored to cookies/localStorage
+	var remokuVarNames = "rokuAddress manualRokus namedRokus scannedRokus myNetwork rokuCount macros showFavs fav1 fav2 fav3 bgColor fgColor".split(" ");
 
 //alias $ to document.getElementById for brevity
 function $(o){return document.getElementById(o);}
@@ -182,11 +184,41 @@ function is_touch_device() {
 //   }  
 }
 
+function loadConfigFromText(){
+	if(window.confirm("Overwrite your current settings with the content of the import/export field?")){
+		try{	var importedConfigs = {};
+		  var importedConfigs = JSON.parse( $('settingstextarea').value );
+		 	for (var key in importedConfigs){
+				setConfig(key,importedConfigs[key]);
+		  }
+	    document.location.reload(true);
+		} catch(e) {
+		dbg(e);
+		}
+	}
+}
+
+function saveConfigToText(){
+	try{
+		var exportedConfigs = {};
+		for(var i = 0; i<remokuVarNames.length; i++){
+			if( getConfig(remokuVarNames[i]) )exportedConfigs[remokuVarNames[i]] = getConfig(remokuVarNames[i]);
+		}
+  $('settingstextarea').value = JSON.stringify(exportedConfigs);
+ 	} catch (e){
+		dbg(e);
+	}
+}
+
 function getConfig(name){
 	if (useCookies){
 		return readCookie(name);
 	} else {
-		return localStorage.getItem(name);
+		try {
+			return localStorage.getItem(name);
+	  } catch (e){
+		  dbg(e);
+		}
 	}
 }
 	
@@ -194,9 +226,29 @@ function setConfig(name, value){
 	if (useCookies){
 		createCookie(name, value, 365);
 	} else {
-		localStorage.setItem(name, value);
+		try{
+		  localStorage.setItem(name, value);
+	  } catch (e){
+		  dbg(e);
+	  }
 	}
+}
 
+function wipeConfig(){
+  for(var i = 0; i<remokuVarNames.length; i++){
+		setConfig(remokuVarNames[i], "");
+	}
+	try{
+		if (hasStorage && localStorage.clear) {
+			localStorage.clear();
+		} else {
+		  for(var i = 0; i<remokuVarNames.length; i++){
+				eraseCookie(remokuVarNames[i]);
+			}
+		}
+	} catch(e) {
+		dbg(e);	
+	}
 }
 
 function createCookie(name,value,days) {
@@ -221,10 +273,15 @@ function readCookie(name) {
   return null;
 }
 
+function eraseCookie(name) {
+	createCookie(name,"",-1);
+}
+
 function dbg(log){
-	//if (typeof console!=undefined) console.log(log);
+	if (typeof JSON!=='undefined' && typeof log !=='string') log = JSON.stringify(log);
+	if (typeof console!=='undefined') console.log(log);
 	//else alert (log);
-	dbgOut.innerHTML += log + "<br><br>";	
+	dbgOut.innerHTML += log + "<br>";	
 }
 
 function ver(channel, build){
@@ -788,8 +845,12 @@ function loadRokuImages(){
 
 		
 function _rmAppsCB(apps){
-	if(localStorage.setItem){
-		localStorage.setItem(rokuAddress + '-apps', JSON.stringify(apps));
+	if(hasStorage){
+		try{
+		  localStorage.setItem(rokuAddress + '-apps', JSON.stringify(apps));
+	  } catch(e){
+		  dbg(e);
+	  }
 	}
 	var list = "";
 	var applist = $("applist");
@@ -849,7 +910,7 @@ function getBuild(){
 				var response = xmlhttp.responseText;
 				response = response.split("\n");
 				var channel = response[2].substr(1);
-				var build = "Build date: " + response[3].substr(1);
+				var build = response[3].substr(1);
 				ver(channel, build);
 				}
 			};
@@ -861,23 +922,6 @@ function getBuild(){
 //END ROKU SPECIFIC CODE
 ////////////////////////
 
-function wipeSettings(){
-	setConfig("rokuAddress", "");
-	setConfig("scannedRokus", "");
-	setConfig("manualRokus", "");
-	setConfig("rokuCount", "");
-	setConfig("namedRokus", "");
-	setConfig("bgColor", "");	
-	setConfig("fgColor", "");
-	setConfig("macros", "");
-	setConfig("showFavs", "");
-	setConfig("myNetwork","");
-	setConfig("fav1","");
-	setConfig("fav2","");
-	setConfig("fav3","");
-	//setConfig("apps", "");
-	if (localStorage.clear) localStorage.clear();
-}
 //////////////
 //GUI BINDINGS
 function btnDown(){
@@ -1264,16 +1308,17 @@ window.onload = function(){
 	  rokupost('launch','11?contentId='+launchid);
 	  // /launch/11?contentId=12
 	  };
-	wipeSettingsButton = $("wipesettings");
-	wipeSettingsButton.onclick = wipeSettings;
-	
+	$("wipesettings").onclick = wipeConfig;
+	$("importsettings").onclick = loadConfigFromText;
+	$("exportsettings").onclick = saveConfigToText;
 	controlContainer = $("controlcontainer");
 	
 	rokuSelect = $("rokus");
 	rokuSelect.onchange = setRokuAddress;
 	
 	scannedRokus = getConfig('scannedRokus') ? getConfig('scannedRokus').split(",") : [];
-	
+	//dbg({scannedRokus:scannedRokus});
+	//saveConfigToText();
 	keyboardMode = getConfig('keyboardMode') ? getConfig('keyboardMode') : true;
 	octet1 = $('octet1');
 	octet2 = $('octet2');
@@ -1322,6 +1367,10 @@ window.onload = function(){
 	var channelsLink2 = $('channelslink2');
 		channelsLink2.innerHTML = 'Refer to your <a class="bgcolor" href="http://'+ rokuAddress +':8060/query/apps" target="_blank">installed channels</a> for channel ids.';
 	
+	$('settingstextarea').onfocus = textModeOff;
+	$('settingstextarea').onblur = textModeOn;
+		
+		
 	rokuName = $('rokuname');
 	rokuName.onfocus = textModeOff;
 	rokuName.onblur = function(){
@@ -1347,7 +1396,7 @@ window.onload = function(){
 	nameLine.innerHTML = rokuName.value ? rokuName.value : rokuAddress;
 	nameLine.onclick = showRemotes;
 	try{
-		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'));
+		var apps = JSON.parse(getConfig(rokuAddress + '-apps'));
 	}catch(err){
 		apps = [];	
 	}
@@ -1635,6 +1684,7 @@ window.onload = function(){
     changeTextColor('.nav', '#' + navTextColor);
     changeTextColor('.active', '#' + activeNavTextColor);
     changeTextColor('.bgcolor', '#' + txtcolor);
+    changeTextColor('#reloadlink', '#' + txtcolor);
     cP = colorPicker;
     cP.exportColor = function () {
 	    bgcolor = bgcolorInput.value;
@@ -1688,7 +1738,7 @@ window.onload = function(){
 	//input select option button
     fgcolorInput = $("fgcolor");
     fgcolor = getConfig('fgColor') ? getConfig('fgColor') : "101010";    
-    fgElements = ['input','textarea','#macroArea','select','option','button','.selected','#rokus'];
+    fgElements = ['input','textarea','#macroArea','select','option','button','.selected','#rokus','#settingstextarea'];
     txtcolor = Brightness( fgcolor ) < 130 ? 'FFFFFF' : '000000';
     for (var i = 0; i<fgElements.length;i++) {
 	    changeBackgroundColor(fgElements[i], '#' + fgcolor);

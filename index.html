@@ -15,9 +15,9 @@
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="stylesheet" type="text/css" href="remoku-gui.css" media="screen" /> 
 <link rel="help" type="text/html" href="http://help.remoku.tv" />
-<script src="remoku-gui.js"></script>
 <script src="color-utils.js"></script>
 <script src="cp/colorPicker.js"></script>
+<script src="remoku-gui.js"></script>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -252,6 +252,14 @@ Remoku has an update available.<br>
 
 </fieldset>
 
+<fieldset>
+<legend>Profile Management</legend>
+	<button id="exportsettings">Export Settings</button><button id="importsettings">Import Settings</button><br>
+	<textarea id="settingstextarea"></textarea><br>
+	Use this field to copy and paste settings for export and import.<br><br>
+	<button id="wipesettings">Wipe Settings</button>
+</fieldset>
+
 	<div class="box hidden">
 		<h2>Apps</h2>First<br>Install Remoku Channel<br>Then<br>
 		<button id="startremoku">Launch Remoku Channel</button><br>Then<br>
@@ -266,7 +274,6 @@ Remoku has an update available.<br>
 	</fieldset>
 	<fieldset><legend>Version</legend>
 	<div id="ver" class="smalltext"></div>
-	<button id="wipesettings">Wipe Settings</button>
 	</fieldset>
 	<fieldset>
 		<legend>Debug Output</legend>
