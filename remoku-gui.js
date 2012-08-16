@@ -283,9 +283,7 @@ function dbg(log){
 	//else alert (log);
 	try {
 		dbgOut.innerHTML += log + "<br>";	
-		} catch (e) {
-			
-			}
+  } catch (e) {	}
 }
 
 function ver(channel, build){
