@@ -21,8 +21,8 @@ addEventListener("load", function load(event){
 	 document.getElementById('prevButton').onclick = function(){localStorage['channel'] = this.value;};
 	 document.getElementById('stableButton').onclick = function(){localStorage['channel'] = this.value;};
 	 document.getElementById('widthField').onchange = function(){localStorage['width'] = this.value;};
-	 if (localStorage['width']!=='undefined') document.getElementById('widthField').value = localStorage['width'];
+	 if (localStorage['width']!==undefined) document.getElementById('widthField').value = localStorage['width'];
 	 document.getElementById('heightField').onchange = function(){localStorage['height'] = this.value;};
-	 if (localStorage['width']!=='undefined') document.getElementById('heightField').value = localStorage['height'];
+	 if (localStorage['height']!==undefined) document.getElementById('heightField').value = localStorage['height'];
 	 setChannel();
 },false);  
