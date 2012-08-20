@@ -1,31 +1,17 @@
 <html>
 <head>
     <style type="text/css">
-    body {width:340; height:480;background-color:#000000;}
+    body {width:340px; height:500px; background-color:#000000;}
+    #remokuFrame{
+	    display:block;
+	    margin: 0 auto;
+	    border: 0;
+	    width:100%;
+	    height:100%;}
     </style>
-    <script>
-    addEventListener("DOMContentLoaded", function load(event){
-	var channel = localStorage['channel'];
-    switch(channel){
-		case 'beta':
-		  document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/beta');
-		  break;
-		case 'dev':
-		  document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/dev');
-		  break;
-		case 'prev':
-		  document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/prev');
-		  break;
-		default:
-		  document.getElementById('remokuFrame').setAttribute('src','http://remoku.tv/');
-		  console.log("stable");
-	    }
-	});  
-    </script>
-
+    <script src="popup.js"></script>
 </head>
-<body>
-    <iframe id="remokuFrame" src="http://remoku.tv/" width="100%" height="100%" frameborder="0">
-    </iframe>
+<body id="bod">
+    <iframe id="remokuFrame" src="http://remoku.tv/" frameborder="0"></iframe>
 </body>
 </html>
