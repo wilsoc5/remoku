@@ -2,11 +2,74 @@
 //A. Cassidy Napoli
 //Copyright 2012 
 //License: NEW BSD
-//July 30, 2012 03:22:57 PM 
+//
 ////////////////////////
 //BEGIN HELPER FUNCTIONS
+  //list of variable stored to cookies/localStorage
+	var remokuVarNames = "rokuAddress manualRokus namedRokus scannedRokus myNetwork rokuCount macros showFavs fav1 fav2 fav3 bgColor fgColor".split(" ");
 
+//alias $ to document.getElementById for brevity
 function $(o){return document.getElementById(o);}
+
+//test for localStorage, store result in var hasStorage
+var hasStorage = (function() {
+      try {
+        localStorage.setItem('LStest', 'LStest');
+        localStorage.removeItem('LStest');
+        return true;
+      } catch(e) {
+        return false;
+      }
+    }());
+
+//Array.unique polyfill
+if (!Array.unique) {
+	Array.prototype.unique = function() {
+	var o = {}, i, l = this.length, r = [];
+	for(i=0; i<l;i+=1){ o[this[i]] = this[i];}
+	    for(i in o){r.push(o[i]);}
+	    return r;
+	};
+}
+
+//Array.every polyfill
+if (!Array.prototype.every)
+{
+  Array.prototype.every = function(fun /*, thisp */)
+  {
+    "use strict";
+
+    if (this == null)
+      throw new TypeError();
+
+    var t = Object(this);
+    var len = t.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in t && !fun.call(thisp, t[i], i, t))
+        return false;
+    }
+
+    return true;
+  };
+}
+
+
+//Object.keys polyfill
+Object.keys=Object.keys||function(o,k,r){r=[];for(k in o)r.hasOwnProperty.call(o,k)&&r.push(k);return r;};
+
+//Return an array of the ancestors of an element
+function parents(node) {
+  var nodes = [];
+  for (; node; node = node.parentNode) {
+    nodes.unshift(node);
+  }
+  return nodes;
+}
 
 function hmsToSecondsOnly(str){
 //HH:MM:SS to seconds
@@ -55,53 +118,30 @@ function removeSelectOption(selectId, display) {
 
 
 function changeBackgroundColor(theSelector, parameter){
-	[].every.call( document.styleSheets, function ( sheet ) {
-		  rules = sheet.rules || sheet.cssRules || [];
-	    return [].every.call( rules, function ( rule ) {
-	        if ( rule.selectorText === theSelector ) {
-	            rule.style.backgroundColor = parameter;
-	            return false;
-	        }
-	        return true;
-	    });
-	});	
+		[].every.call( document.styleSheets, function ( sheet ) {
+			  rules = sheet.rules || sheet.cssRules || [];
+		    return [].every.call( rules, function ( rule ) {
+		        if ( rule.selectorText === theSelector ) {
+		            rule.style.backgroundColor = parameter;
+		            return false;
+		        }
+		        return true;
+		    });
+		});	
 }
-
 function changeTextColor(theSelector, parameter){
-	[].every.call( document.styleSheets, function ( sheet ) {
-		  rules = sheet.rules || sheet.cssRules || [];
-	    return [].every.call( rules, function ( rule ) {
-	        if ( rule.selectorText === theSelector ) {
-	            rule.style.color = parameter;
-	            return false;
-	        }
-	        return true;
-	    });
-	});	
+		[].every.call( document.styleSheets, function ( sheet ) {
+			  rules = sheet.rules || sheet.cssRules || [];
+		    return [].every.call( rules, function ( rule ) {
+		        if ( rule.selectorText === theSelector ) {
+		            rule.style.color = parameter;
+		            return false;
+		        }
+		        return true;
+		    });
+		});	
 }
 
-//Array.unique polyfill
-if (!Array.unique) {
-	Array.prototype.unique = function() {
-	var o = {}, i, l = this.length, r = [];
-	for(i=0; i<l;i+=1){ o[this[i]] = this[i];}
-	    for(i in o){r.push(o[i]);}
-	    return r;
-	};
-}
-
-
-//Object.keys polyfill
-Object.keys=Object.keys||function(o,k,r){r=[];for(k in o)r.hasOwnProperty.call(o,k)&&r.push(k);return r;};
-
-//Return an array of the ancestors of an element
-function parents(node) {
-  var nodes = [];
-  for (; node; node = node.parentNode) {
-    nodes.unshift(node);
-  }
-  return nodes;
-}
 
 function addresstoVarName(address){
 	var splitaddress = address.split(".");
@@ -124,7 +164,7 @@ function isBadBrowser(){
 	if (navigator.userAgent.indexOf('FluidApp')!=-1) return true;
 	
 	//Older browsers might not have localStorage support
-	if (!localStorage.getItem) return true;
+	if (!hasStorage) return true;
 	
 	//otherwise localStorage will be used
 	return false;
@@ -144,11 +184,41 @@ function is_touch_device() {
 //   }  
 }
 
+function loadConfigFromText(){
+	if(window.confirm("Overwrite your current settings with the content of the import/export field?")){
+		try{	var importedConfigs = {};
+		  var importedConfigs = JSON.parse( $('settingstextarea').value );
+		 	for (var key in importedConfigs){
+				setConfig(key,importedConfigs[key]);
+		  }
+	    document.location.reload(true);
+		} catch(e) {
+		dbg(e);
+		}
+	}
+}
+
+function saveConfigToText(){
+	try{
+		var exportedConfigs = {};
+		for(var i = 0; i<remokuVarNames.length; i++){
+			if( getConfig(remokuVarNames[i]) )exportedConfigs[remokuVarNames[i]] = getConfig(remokuVarNames[i]);
+		}
+  $('settingstextarea').value = JSON.stringify(exportedConfigs);
+ 	} catch (e){
+		dbg(e);
+	}
+}
+
 function getConfig(name){
 	if (useCookies){
 		return readCookie(name);
 	} else {
-		return localStorage.getItem(name);
+		try {
+			return localStorage.getItem(name);
+	  } catch (e){
+		  dbg(e);
+		}
 	}
 }
 	
@@ -156,9 +226,29 @@ function setConfig(name, value){
 	if (useCookies){
 		createCookie(name, value, 365);
 	} else {
-		localStorage.setItem(name, value);
+		try{
+		  localStorage.setItem(name, value);
+	  } catch (e){
+		  dbg(e);
+	  }
 	}
+}
 
+function wipeConfig(){
+  for(var i = 0; i<remokuVarNames.length; i++){
+		setConfig(remokuVarNames[i], "");
+	}
+	try{
+		if (hasStorage && localStorage.clear) {
+			localStorage.clear();
+		} else {
+		  for(var i = 0; i<remokuVarNames.length; i++){
+				eraseCookie(remokuVarNames[i]);
+			}
+		}
+	} catch(e) {
+		dbg(e);	
+	}
 }
 
 function createCookie(name,value,days) {
@@ -183,10 +273,17 @@ function readCookie(name) {
   return null;
 }
 
+function eraseCookie(name) {
+	createCookie(name,"",-1);
+}
+
 function dbg(log){
-	//if (typeof console!=undefined) console.log(log);
+	if (typeof JSON!=='undefined' && typeof log !=='string') log = JSON.stringify(log);
+	if (typeof console!=='undefined') console.log(log);
 	//else alert (log);
-	dbgOut.innerHTML += log + "<br><br>";	
+	try {
+		dbgOut.innerHTML += log + "<br>";	
+  } catch (e) {	}
 }
 
 function ver(channel, build){
@@ -750,8 +847,12 @@ function loadRokuImages(){
 
 		
 function _rmAppsCB(apps){
-	if(localStorage.setItem){
-		localStorage.setItem(rokuAddress + '-apps', JSON.stringify(apps));
+	if(hasStorage){
+		try{
+		  localStorage.setItem(rokuAddress + '-apps', JSON.stringify(apps));
+	  } catch(e){
+		  dbg(e);
+	  }
 	}
 	var list = "";
 	var applist = $("applist");
@@ -805,13 +906,13 @@ function launchRemoku(){
 	
 function getBuild(){
 	if (window.XMLHttpRequest){
-		xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function(){
 			if (xmlhttp.readyState==4 && xmlhttp.status==200){
 				var response = xmlhttp.responseText;
 				response = response.split("\n");
 				var channel = response[2].substr(1);
-				var build = "Build date: " + response[3].substr(1);
+				var build = response[3].substr(1);
 				ver(channel, build);
 				}
 			};
@@ -823,23 +924,6 @@ function getBuild(){
 //END ROKU SPECIFIC CODE
 ////////////////////////
 
-function wipeSettings(){
-	setConfig("rokuAddress", "");
-	setConfig("scannedRokus", "");
-	setConfig("manualRokus", "");
-	setConfig("rokuCount", "");
-	setConfig("namedRokus", "");
-	setConfig("bgColor", "");	
-	setConfig("fgColor", "");
-	setConfig("macros", "");
-	setConfig("showFavs", "");
-	setConfig("myNetwork","");
-	setConfig("fav1","");
-	setConfig("fav2","");
-	setConfig("fav3","");
-	//setConfig("apps", "");
-	if (localStorage.clear) localStorage.clear();
-}
 //////////////
 //GUI BINDINGS
 function btnDown(){
@@ -1120,6 +1204,8 @@ var launchKey;
 var shoutCastNameInput;
 var shoutCastUrlInput;
 var shoutCastLaunchButton;
+var macroSelect;
+var macroArea;
 
 var navRemote;
 var navGoodies;
@@ -1153,9 +1239,22 @@ var remote0;
 var nameLine;
 
 var bgcolorInput;
+var bgcolor;
+var fgcolor;
 var fgElements = new Array();
 
 
+function onUpdateReady() {
+  dbg('found new version!');
+}
+try{
+	window.applicationCache.addEventListener('updateready', onUpdateReady);
+	if(window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+  	onUpdateReady();
+	}
+} catch (e) {
+	dbg(e);
+}
 // Check if a new cache is available on page load.
 if(window.addEventListener){
 window.addEventListener('load', function(e) {
@@ -1222,16 +1321,17 @@ window.onload = function(){
 	  rokupost('launch','11?contentId='+launchid);
 	  // /launch/11?contentId=12
 	  };
-	wipeSettingsButton = $("wipesettings");
-	wipeSettingsButton.onclick = wipeSettings;
-	
+	$("wipesettings").onclick = wipeConfig;
+	$("importsettings").onclick = loadConfigFromText;
+	$("exportsettings").onclick = saveConfigToText;
 	controlContainer = $("controlcontainer");
 	
 	rokuSelect = $("rokus");
 	rokuSelect.onchange = setRokuAddress;
 	
 	scannedRokus = getConfig('scannedRokus') ? getConfig('scannedRokus').split(",") : [];
-	
+	//dbg({scannedRokus:scannedRokus});
+	//saveConfigToText();
 	keyboardMode = getConfig('keyboardMode') ? getConfig('keyboardMode') : true;
 	octet1 = $('octet1');
 	octet2 = $('octet2');
@@ -1280,6 +1380,10 @@ window.onload = function(){
 	var channelsLink2 = $('channelslink2');
 		channelsLink2.innerHTML = 'Refer to your <a class="bgcolor" href="http://'+ rokuAddress +':8060/query/apps" target="_blank">installed channels</a> for channel ids.';
 	
+	$('settingstextarea').onfocus = textModeOff;
+	$('settingstextarea').onblur = textModeOn;
+		
+		
 	rokuName = $('rokuname');
 	rokuName.onfocus = textModeOff;
 	rokuName.onblur = function(){
@@ -1305,7 +1409,7 @@ window.onload = function(){
 	nameLine.innerHTML = rokuName.value ? rokuName.value : rokuAddress;
 	nameLine.onclick = showRemotes;
 	try{
-		var apps = JSON.parse(localStorage.getItem(rokuAddress + '-apps'));
+		var apps = JSON.parse(getConfig(rokuAddress + '-apps'));
 	}catch(err){
 		apps = [];	
 	}
@@ -1593,27 +1697,32 @@ window.onload = function(){
     changeTextColor('.nav', '#' + navTextColor);
     changeTextColor('.active', '#' + activeNavTextColor);
     changeTextColor('.bgcolor', '#' + txtcolor);
-    cP = colorPicker;
-    cP.exportColor = function () {
-	    bgcolor = bgcolorInput.value;
-			changeBackgroundColor('.bgcolor', '#' + bgcolor);
-			txtcolor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
-			changeTextColor('.bgcolor', '#' + txtcolor);
-	    navTextColor = Brightness( bgcolor ) < 130 ? 'D0D0D0' : '555555';
-	    activeNavTextColor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
-	    changeTextColor('.nav', '#' + navTextColor);
-	    changeTextColor('.active', '#' + activeNavTextColor);
-			setConfig('bgColor', bgcolor);
-			
-			fgcolor = fgcolorInput.value;
-	    txtcolor = Brightness( fgcolor ) < 130 ? 'FFFFFF' : '000000';
-	    for (var i = 0; i<fgElements.length;i++) {
-		    changeBackgroundColor(fgElements[i], '#' + fgcolor);
-			changeTextColor(fgElements[i], '#' + txtcolor);
-		    }
-		setConfig('fgColor', fgcolor);
-	  };
-	    
+    changeTextColor('#reloadlink', '#' + txtcolor);
+		try {
+			cP = colorPicker;
+	    cP.exportColor = function () {
+		    bgcolor = bgcolorInput.value;
+				changeBackgroundColor('.bgcolor', '#' + bgcolor);
+				txtcolor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
+				changeTextColor('.bgcolor', '#' + txtcolor);
+		    navTextColor = Brightness( bgcolor ) < 130 ? 'D0D0D0' : '555555';
+		    activeNavTextColor = Brightness( bgcolor ) < 130 ? 'FFFFFF' : '000000';
+		    changeTextColor('.nav', '#' + navTextColor);
+		    changeTextColor('.active', '#' + activeNavTextColor);
+				setConfig('bgColor', bgcolor);
+				
+				fgcolor = fgcolorInput.value;
+		    txtcolor = Brightness( fgcolor ) < 130 ? 'FFFFFF' : '000000';
+		    for (var i = 0; i<fgElements.length;i++) {
+			    changeBackgroundColor(fgElements[i], '#' + fgcolor);
+				changeTextColor(fgElements[i], '#' + txtcolor);
+			    }
+			setConfig('fgColor', fgcolor);
+	  	};
+	  } catch (e){
+			  dbg(e);
+			  };
+			    
     bgcolorInput.onfocus = function(){
 	    textModeOff();
 	    bgcolor = bgcolorInput.value;
@@ -1646,7 +1755,7 @@ window.onload = function(){
 	//input select option button
     fgcolorInput = $("fgcolor");
     fgcolor = getConfig('fgColor') ? getConfig('fgColor') : "101010";    
-    fgElements = ['input','textarea','#macroArea','select','option','button','.selected','#rokus'];
+    fgElements = ['input','textarea','#macroArea','select','option','button','.selected','#rokus','#settingstextarea'];
     txtcolor = Brightness( fgcolor ) < 130 ? 'FFFFFF' : '000000';
     for (var i = 0; i<fgElements.length;i++) {
 	    changeBackgroundColor(fgElements[i], '#' + fgcolor);
@@ -1666,6 +1775,7 @@ window.onload = function(){
 	fgcolorInput.onblur = function(){
 		textModeOn();
 		};
+		
 	textEntryInput = $("textentry");
 	textEntryInput.value = "";
 	textEntryInput.onkeyup = rokuDeleteOrBlur;
