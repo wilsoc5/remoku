@@ -1,7 +1,7 @@
+AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript text/cache-manifest
 ErrorDocument 404 /notfounderror.html
 ErrorDocument 403 /notautherror.html
 AddType text/cache-manifest .manifest
-AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript text/cache-manifest
 <IfModule mod_expires.c>
   ExpiresActive on
 
