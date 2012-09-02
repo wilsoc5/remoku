@@ -1585,7 +1585,7 @@ window.onload = function(){
 	
 	
 	showFavoritesChkbx = $("showFaves");
-	showFavs = getConfig('showFavs')=='false'?getConfig('showFavs'):'true';
+	showFavs = getConfig('showFavs')=='true' ? 'true' : 'false';
 	setConfig('showFavs',showFavs);
 	if(showFavs=='true'){
 		showFavoritesChkbx.checked=true;
