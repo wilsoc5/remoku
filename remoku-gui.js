@@ -970,7 +970,7 @@ function activateButton(e){
 		for(i=0;i<navArray.length;i++){
 			if (activeBtn == navArray[i].id){
 				navArray[i].setAttribute("class", "nav active");
-				screenArray[i].setAttribute("class", "visible");
+				screenArray[i].setAttribute("class", "visible"); 
 			} else {
 				screenArray[i].setAttribute("class", "hidden");
 				navArray[i].setAttribute("class", "nav");
