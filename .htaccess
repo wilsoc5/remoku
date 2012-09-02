@@ -1,5 +1,7 @@
-AddType text/cache-manifest .manifest
 AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript text/cache-manifest
+
+
+AddType text/cache-manifest .manifest
 <IfModule mod_expires.c>
   ExpiresActive on
 
