@@ -1,4 +1,6 @@
 # robots.txt generated at http://www.mcanerin.com
 User-agent: *
-Disallow: 
+Disallow: /dev/
+Disallow: /builds/
+Disallow: /prev/
 Sitemap: http://remoku.tv/sitemap.xml
