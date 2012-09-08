@@ -1,4 +1,4 @@
-# robots.txt generated at http://www.mcanerin.com
+# robots.txt of Remoku.tv
 User-agent: *
 Disallow: /dev/
 Disallow: /builds/
