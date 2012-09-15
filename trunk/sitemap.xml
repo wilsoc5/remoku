@@ -7,18 +7,16 @@
 <url>
   <loc>http://remoku.tv/</loc>
   <changefreq>weekly</changefreq>
+  <priority>1</priority>
 </url>
 <url>
   <loc>http://remoku.tv/beta</loc>
   <changefreq>weekly</changefreq>
-</url>
-<url>
-  <loc>http://remoku.tv/dev</loc>
-  <changefreq>daily</changefreq>
+  <priority>0.4</priority>
 </url>
 <url>
   <loc>http://remoku.tv/prev</loc>
   <changefreq>weekly</changefreq>
+  <priority>0.4</priority>
 </url>
-
 </urlset>

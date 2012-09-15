@@ -383,6 +383,12 @@ function updateSelect() {
 			if(rokus.length==1){
 				rokuAddress=rokus[i];
 				setConfig('rokuAddress', rokuAddress);
+				if(notSetupYet){
+					$('advancedsettings').setAttribute("class", "visible");
+					firstSetupScreen.setAttribute("class", "hidden");
+					configScreen.setAttribute("class", "hidden");
+					notSetupYet = false;
+				}
 			}
 			var rokuSelected = rokuAddress==rokus[i] ? true : false;
 			var thisRokuName =  namedRokus && namedRokus[rokus[i]] ? namedRokus[rokus[i]] : rokus[i];
@@ -616,8 +622,12 @@ function firstSetup(){
 	for(i=0;i<screenArray.length;i++){
 		screenArray[i].setAttribute("class", "hidden");
 		}
+	remoteScreen.setAttribute("class", "visible");
 	firstSetupScreen.setAttribute("class", "visible");
 	configScreen.setAttribute("class", "visible");
+	$('advancedsettings').setAttribute("class", "hidden");
+	window.scrollTo(1,400);
+	notSetupYet = true;
 	//var setup = confirm("It looks like you haven't used Remoku before. Would you like to begin by scanning for Rokus?");
 	//if(setup){
 	//	rokuCount = prompt ("Ok, how many Rokus do you own?", "1");
@@ -1237,6 +1247,8 @@ var clearTimer;
 var longtouch;
 
 var MacroInput;
+
+var notSetupYet;
 
 var remote0;
 

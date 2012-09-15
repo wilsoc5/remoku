@@ -197,17 +197,17 @@ Remoku has an update available.<br>
 
 <div id="config" class="hidden">
 <div id="firstsetup" class="hidden">
-	<div class="box">
-		<h2>Welcome to Remoku, a web app for Roku Remote Control</h2>
-		<div style="font-size:11pt;text-align:left;">
-		To begin, Remoku needs to know the address of your Roku(s).<br>
-		<br>
-		You can search for Rokus if you enter your network address range* below, then click the Scan button to look for Roku devices or manually add the address of a Roku.<br>
-		<br>
-		If the scan doesn't find any Rokus, look for help at <a href="http://help.remoku.tv" target="_blank" class="bgcolor">help.remoku.tv</a>.<br><br>
-		<span style="font-size:8pt;">* Eg. 192.168.1.X, this can be found in the Network Control Panel or Wifi Settings areas of most devices.</span>
-		</div>
-	</div>
+	<fieldset>
+		<legend>Remoku: Getting Started</legend>
+		Remoku is a web app for Roku Remote Control.<br><br>
+			To get started, you can search for Rokus if you enter your network address range* below, 
+			then click the Scan button to look for Roku devices. Or, you can manually add the address of a Roku.<br><br>
+			If the scan doesn't find any Rokus, please look for help at
+			 <a href="http://help.remoku.tv" target="_blank" class="bgcolor">help.remoku.tv</a>.<br><br>
+			<span style="font-size:8pt;">* For example: <b>192.168.1.X</b>.
+			These numbers can be found within the Network Control Panel or Wifi Settings of most devices, and/or in your router manual.
+			</span>
+	</fieldset>
 </div>
 <fieldset id="controlcontainer">
 	<legend>Control This Roku</legend>
@@ -245,6 +245,7 @@ Remoku has an update available.<br>
 	<label>Manual Add: </label><input class="maddress" id="maddress" value="192.168.1.3" /><button id="addroku">+</button><br>
 	<form><label>Remove this: </label><select id="manualrokus" disabled></select><button id="removeroku">-</button></form>
 </fieldset>
+<div id="advancedsettings">
 <fieldset>
 	<legend>Colors</legend>
 	<label>Background Color: #</label><input class="tweakinput" id="bgcolor" value="101010"  onclick="colorPicker(event,'B',1, 1)"/><br>
@@ -273,7 +274,7 @@ Remoku has an update available.<br>
 		<button id="startremoku">Launch Remoku Channel</button><br>Then<br>
 		<button id="loadapps">Load Channel List</button>
 	</div>
-	
+</div>
 </div>
 <div id="about" class="hidden">
 	<fieldset><legend>Remoku</legend>
