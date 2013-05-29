@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+	<title>New Document</title>
+	<meta name="generator" content="EverEdit" />
+	<meta name="author"	content="" />
+	<meta name="keywords" content="" />
+	<meta name="description" content=""	/>
+</head>
+<script>
+function changeAction(val){
+document.getElementById('rokuPoster').action ='http://' + val + ':8060/keypress/Home';
+}
+</script>
+<body>
+<label for="address">Address</label>
+<input name="address" type="test" value="192.168.1.2" onchange="changeAction(this.value);" />
+	<form id="rokuPoster" action="" method="post" target="postframe">
+		<input name="mySubmit" type="submit" value="Home" />
+	</form>
+	<iframe name="postframe" id="postframe" src="about:blank"></iframe>
+</body>
+</html>
