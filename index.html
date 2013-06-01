@@ -1,24 +1,262 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-	<title>New Document</title>
+    <title>Remoku: Simple</title>
+	<meta charset="utf-8" />
 	<meta name="generator" content="EverEdit" />
-	<meta name="author"	content="" />
-	<meta name="keywords" content="" />
-	<meta name="description" content=""	/>
-</head>
-<script>
-function changeAction(val){
-document.getElementById('rokuPoster').action ='http://' + val + ':8060/keypress/Home';
+	<meta name="author"	content="A. Cassidy Napoli" />
+	<meta name="keywords" content="Web, Roku, Remote" />
+	<meta name="description" content="Remoku:Simple contains the minimum necessary code for functionality"	/>
+    <meta name="viewport" content="width=240, height=320, initial-scale=1.0, user-scalable=no" />
+    <meta name="MobileOptimized" content="220" />
+	<link rel="icon" type="image/png" href="http://remoku.tv/favicon.png">
+<style>
+	html{
+		margin:0;padding:0;
+	}
+
+	body{
+		color:white;
+		background: #000000;
+		width:220px;
+		text-align: center;
+		margin:0;padding-left:8px;
+	}
+	a{color:white;text-decoration: none;}
+	.keyboardTable{
+		text-align: center;
+		width:200px;
+	 	font-family:monospace;
+	}
+
+	.keyboardTable td{
+		width:10px;
+	}
+	#address{width:100px;}
+	#remoteTable{
+		text-align: center;
+	}
+	
+	#remoteTable input[type="button"]{
+		vertical-align: middle;
+		width:100%;
+		height:30px;
+	}
+
+	#transportRow input{
+		margin-top:10px;
+	}
+
+	#doPostForm, #postframe{
+		visibility:hidden;
+		width:0;
+		height:0;
+	}
+@media handheld{
+		#remoteTable input[type="button"]{
+			overflow: visible;
+			padding-top:8px;
+			margin:0;
+		}
 }
+</style>
+<script>
+	function createCookie(name, value, days) {
+		var expires;
+		if (days) {
+			var date = new Date();
+			date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+			expires = "; expires=" + date.toGMTString();
+		} else expires = "";
+		document.cookie = name + "=" + value + expires + "; path=/";
+	}
+
+	function readCookie(name) {
+		var nameEQ = name + "=";
+		var ca = document.cookie.split(';');
+		for (var i = 0; i < ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+			if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+		}
+		return null;
+	}
+
+	function eraseCookie(name) {
+		createCookie(name, "", -1);
+	}
+
+	function updateAddress(newAddress){
+		createCookie('SimpleAddress',newAddress,365);
+	}
+
+	function doSubmit(command){
+		if (command=="OK"){command="Select"};
+		if (command=="Replay"){command="InstantReplay"};
+		document.getElementById("doPostForm").action = "http://" + document.getElementById("address").value + ":8060/keypress/" + command;
+		document.getElementById("doPostForm").submit();
+		return false;
+	}
 </script>
+</head>
 <body>
-<label for="address">Address</label>
-<input name="address" type="test" value="192.168.1.2" onchange="changeAction(this.value);" />
-	<form id="rokuPoster" action="" method="post" target="postframe">
-		<input name="mySubmit" type="submit" value="Home" />
-	</form>
+	<label for="address">Address</label><input id="address" name="address" type="text" value="192.168.1.15" onchange="updateAddress(this.value);" />
+	<table id="remoteTable">
+		<tr>
+			<td>
+				<input type="button" value="Back" onclick="doSubmit(this.value);"/>
+			</td>
+			<td></td>
+			<td>
+				<input  type="button" value="Home" onclick="doSubmit(this.value);"/>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input  type="button" value="Up" onclick="doSubmit(this.value);"/>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<input  type="button" value="Left" onclick="doSubmit(this.value);"/>
+			</td>
+			<td>
+				<input  type="button" value="OK" onclick="doSubmit(this.value);"/>
+			</td>
+			<td>
+				<input  type="button" value="Right" onclick="doSubmit(this.value);"/>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input  type="button" value="Down" onclick="doSubmit(this.value);"/>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<input  type="button" value="Replay" onclick="doSubmit(this.value);"/>
+			</td>
+			<td></td>
+			<td>
+				<input  type="button" value="Info" onclick="doSubmit(this.value);"/>
+			</td>
+		</tr>
+		<tr id="transportRow">
+			<td>
+				<input  type="button" value="Rev" onclick="doSubmit(this.value);"/>
+			</td>
+			<td>
+				<input  type="button" value="Play" onclick="doSubmit(this.value);"/>
+			</td>
+			<td>
+				<input  type="button" value="Fwd" onclick="doSubmit(this.value);"/>
+			</td>
+		</tr>
+	</table>
+	<table class="keyboardTable">
+		<tr>
+			<td>
+				<a href="#" accesskey="q" onclick="return doSubmit('Lit_q');">q</a>
+			</td>
+			<td>
+				<a href="#" accesskey="w" onclick="return doSubmit('Lit_w');">w</a>
+			</td>
+			<td>
+				<a href="#" accesskey="e" onclick="return doSubmit('Lit_e');">e</a>
+			</td>
+			<td>
+				<a href="#" accesskey="r" onclick="return doSubmit('Lit_r');">r</a>
+			</td>
+			<td>
+				<a href="#" accesskey="t" onclick="return doSubmit('Lit_t');">t</a>
+			</td>
+			<td>
+				<a href="#" accesskey="y" onclick="return doSubmit('Lit_y');">y</a>
+			</td>
+			<td>
+				<a href="#" accesskey="u" onclick="return doSubmit('Lit_u');">u</a>
+			</td>
+			<td>
+				<a href="#" accesskey="i" onclick="return doSubmit('Lit_i');">i</a>
+			</td>
+			<td>
+				<a href="#" accesskey="o" onclick="return doSubmit('Lit_o');">o</a>
+			</td>
+			<td>
+				<a href="#" accesskey="p" onclick="return doSubmit('Lit_p');">p</a>
+			</td>
+		</tr>
+	</table>
+	<table class="keyboardTable">
+		<tr>
+			<td><b>&uarr;</b></td>
+			<td>
+				<a href="#" accesskey="a" onclick="return doSubmit('Lit_a');">a</a>
+			</td>
+			<td>
+				<a href="#" accesskey="s" onclick="return doSubmit('Lit_s');">s</a>
+			</td>
+			<td>
+				<a href="#" accesskey="d" onclick="return doSubmit('Lit_d');">d</a>
+			</td>
+			<td>
+				<a href="#" accesskey="f" onclick="return doSubmit('Lit_f');">f</a>
+			</td>
+			<td>
+				<a href="#" accesskey="g" onclick="return doSubmit('Lit_g');">g</a>
+			</td>
+			<td>
+				<a href="#" accesskey="h" onclick="return doSubmit('Lit_h');">h</a>
+			</td>
+			<td>
+				<a href="#" accesskey="j" onclick="return doSubmit('Lit_j');">j</a>
+			</td>
+			<td>
+				<a href="#" accesskey="k" onclick="return doSubmit('Lit_k');">k</a>
+			</td>
+			<td>
+				<a href="#" accesskey="l" onclick="return doSubmit('Lit_l');">l</a>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+	<table class="keyboardTable">
+		<tr>
+			<td></td>
+			<!--td></td-->
+			<td>
+				<a href="#" accesskey="z" onclick="return doSubmit('Lit_z');">z</a>
+			</td>
+			<td>
+				<a href="#" accesskey="x" onclick="return doSubmit('Lit_x');">x</a>
+			</td>
+			<td>
+				<a href="#" accesskey="c" onclick="return doSubmit('Lit_c');">c</a>
+			</td>
+			<td>
+				<a href="#" accesskey="v" onclick="return doSubmit('Lit_v');">v</a>
+			</td>
+			<td>
+				<a href="#" accesskey="b" onclick="return doSubmit('Lit_b');">b</a>
+			</td>
+			<td>
+				<a href="#" accesskey="n" onclick="return doSubmit('Lit_n');">n</a>
+			</td>
+			<td>
+				<a href="#" accesskey="m" onclick="return doSubmit('Lit_m');">m</a>
+			</td>
+			<!--td></td-->
+			<td></td>
+		</tr>
+	</table>
+	<form id="doPostForm" method="post" target="postframe"></form>
 	<iframe name="postframe" id="postframe" src="about:blank"></iframe>
+	<script>
+	document.getElementById("address").value = readCookie("SimpleAddress") ? readCookie("SimpleAddress") : "192.168.1.15";
+	</script>
 </body>
 </html>
