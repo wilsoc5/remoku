@@ -46,7 +46,7 @@
 	#transportRow input{
 		margin-top:10px;
 	}
-
+	#capsLock{border-bottom:1px white solid;}
 	#doPostForm, #postframe{
 		visibility:hidden;
 		width:0;
@@ -61,6 +61,8 @@
 }
 </style>
 <script>
+var caps = false;
+var shiftOn = false;
 	function createCookie(name, value, days) {
 		var expires;
 		if (days) {
@@ -89,10 +91,38 @@
 	function updateAddress(newAddress){
 		createCookie('SimpleAddress',newAddress,365);
 	}
+function toggleCaps(){
+	caps = !caps;
+	if(caps){
+		document.getElementById("capsLock").style.color="red";
+		//alert("red");
+	}else{
+		document.getElementById("capsLock").style.color="white";
+		//alert("white");
+	}
+	if(shiftOn)toggleShift();
+	return false;
+}
 
+function toggleShift(){
+	shiftOn = !shiftOn;
+	if(shiftOn){
+		document.getElementById("shiftBtn").style.color="red";
+		//alert("red");
+	}else{
+		document.getElementById("shiftBtn").style.color="white";
+		//alert("white");
+	}
+	return false;
+}
 	function doSubmit(command){
 		if (command=="OK"){command="Select"};
 		if (command=="Replay"){command="InstantReplay"};
+		if((shiftOn || caps) && command.indexOf("Lit_")>=0){
+			command = "Lit_" + command.substring(4).toUpperCase();
+			//console.log(command);
+			if(shiftOn)toggleShift();
+		}
 		document.getElementById("doPostForm").action = "http://" + document.getElementById("address").value + ":8060/keypress/" + command;
 		document.getElementById("doPostForm").submit();
 		return false;
@@ -193,7 +223,7 @@
 	</table>
 	<table class="keyboardTable">
 		<tr>
-			<td><b>&uarr;</b></td>
+			<td><b><a id="capsLock" href="#" onclick="return toggleCaps();">&uarr;</a></b></td>
 			<td>
 				<a href="#" accesskey="a" onclick="return doSubmit('Lit_a');">a</a>
 			</td>
@@ -226,7 +256,7 @@
 	</table>
 	<table class="keyboardTable">
 		<tr>
-			<td></td>
+			<td><b><a id="shiftBtn" href="#" onclick="return toggleShift();">&uarr;</a></b></td>
 			<!--td></td-->
 			<td>
 				<a href="#" accesskey="z" onclick="return doSubmit('Lit_z');">z</a>
