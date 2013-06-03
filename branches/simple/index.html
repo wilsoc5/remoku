@@ -7,12 +7,13 @@
 	<meta name="author"	content="A. Cassidy Napoli" />
 	<meta name="keywords" content="Web, Roku, Remote" />
 	<meta name="description" content="Remoku:Simple contains the minimum necessary code for functionality"	/>
-    <meta name="viewport" content="width=240, height=320, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.4, user-scalable=no" />
     <meta name="MobileOptimized" content="220" />
 	<link rel="icon" type="image/png" href="http://remoku.tv/favicon.png">
 <style>
 	html{
 		margin:0;padding:0;
+		width:220px;
 	}
 
 	body{
@@ -22,7 +23,11 @@
 		text-align: center;
 		margin:0;padding-left:8px;
 	}
-	a{color:white;text-decoration: none;}
+	a{
+		color:white;
+		text-decoration: none;
+	}
+	
 	.keyboardTable{
 		text-align: center;
 		width:200px;
@@ -32,11 +37,14 @@
 	.keyboardTable td{
 		width:10px;
 	}
-	#address{width:100px;}
+	#address{
+		width:100px;
+	}
+
 	#remoteTable{
 		text-align: center;
 	}
-	
+
 	#remoteTable input[type="button"]{
 		vertical-align: middle;
 		width:100%;
@@ -46,12 +54,16 @@
 	#transportRow input{
 		margin-top:10px;
 	}
-	#capsLock{border-bottom:1px white solid;}
+	#capsLock{
+		border-bottom:1px white solid;
+	}
+	
 	#doPostForm, #postframe{
 		visibility:hidden;
 		width:0;
 		height:0;
 	}
+	
 @media handheld{
 		#remoteTable input[type="button"]{
 			overflow: visible;
@@ -60,9 +72,59 @@
 		}
 }
 </style>
+<script type='application/javascript' src='fastclick.js'></script>
 <script>
-var caps = false;
-var shiftOn = false;
+
+if (!Element.prototype.addEventListener) {
+  var oListeners = {};
+  function runListeners(oEvent) {
+    if (!oEvent) { oEvent = window.event; }
+    for (var iLstId = 0, iElId = 0, oEvtListeners = oListeners[oEvent.type]; iElId < oEvtListeners.aEls.length; iElId++) {
+      if (oEvtListeners.aEls[iElId] === this) {
+        for (iLstId; iLstId < oEvtListeners.aEvts[iElId].length; iLstId++) { oEvtListeners.aEvts[iElId][iLstId].call(this, oEvent); }
+        break;
+      }
+    }
+  }
+  Element.prototype.addEventListener = function (sEventType, fListener /*, useCapture (will be ignored!) */) {
+    if (oListeners.hasOwnProperty(sEventType)) {
+      var oEvtListeners = oListeners[sEventType];
+      for (var nElIdx = -1, iElId = 0; iElId < oEvtListeners.aEls.length; iElId++) {
+        if (oEvtListeners.aEls[iElId] === this) { nElIdx = iElId; break; }
+      }
+      if (nElIdx === -1) {
+        oEvtListeners.aEls.push(this);
+        oEvtListeners.aEvts.push([fListener]);
+        this["on" + sEventType] = runListeners;
+      } else {
+        var aElListeners = oEvtListeners.aEvts[nElIdx];
+        if (this["on" + sEventType] !== runListeners) {
+          aElListeners.splice(0);
+          this["on" + sEventType] = runListeners;
+        }
+        for (var iLstId = 0; iLstId < aElListeners.length; iLstId++) {
+          if (aElListeners[iLstId] === fListener) { return; }
+        }     
+        aElListeners.push(fListener);
+      }
+    } else {
+      oListeners[sEventType] = { aEls: [this], aEvts: [ [fListener] ] };
+      this["on" + sEventType] = runListeners;
+    }
+  };
+  Element.prototype.removeEventListener = function (sEventType, fListener /*, useCapture (will be ignored!) */) {
+    if (!oListeners.hasOwnProperty(sEventType)) { return; }
+    var oEvtListeners = oListeners[sEventType];
+    for (var nElIdx = -1, iElId = 0; iElId < oEvtListeners.aEls.length; iElId++) {
+      if (oEvtListeners.aEls[iElId] === this) { nElIdx = iElId; break; }
+    }
+    if (nElIdx === -1) { return; }
+    for (var iLstId = 0, aElListeners = oEvtListeners.aEvts[nElIdx]; iLstId < aElListeners.length; iLstId++) {
+      if (aElListeners[iLstId] === fListener) { aElListeners.splice(iLstId, 1); }
+    }
+  };
+}
+
 	function createCookie(name, value, days) {
 		var expires;
 		if (days) {
@@ -91,7 +153,11 @@ var shiftOn = false;
 	function updateAddress(newAddress){
 		createCookie('SimpleAddress',newAddress,365);
 	}
-function toggleCaps(){
+	
+	var caps = false;
+	var shiftOn = false;
+	
+	function toggleCaps(){
 	caps = !caps;
 	if(caps){
 		document.getElementById("capsLock").style.color="red";
@@ -102,19 +168,20 @@ function toggleCaps(){
 	}
 	if(shiftOn)toggleShift();
 	return false;
-}
-
-function toggleShift(){
-	shiftOn = !shiftOn;
-	if(shiftOn){
-		document.getElementById("shiftBtn").style.color="red";
-		//alert("red");
-	}else{
-		document.getElementById("shiftBtn").style.color="white";
-		//alert("white");
 	}
-	return false;
-}
+
+	function toggleShift(){
+		shiftOn = !shiftOn;
+		if(shiftOn){
+			document.getElementById("shiftBtn").style.color="red";
+			//alert("red");
+		}else{
+			document.getElementById("shiftBtn").style.color="white";
+			//alert("white");
+		}
+		return false;
+	}
+	
 	function doSubmit(command){
 		if (command=="OK"){command="Select"};
 		if (command=="Replay"){command="InstantReplay"};
@@ -127,6 +194,17 @@ function toggleShift(){
 		document.getElementById("doPostForm").submit();
 		return false;
 	}
+
+	if (typeof document.ontouchmove !=="undefined") {
+		document.ontouchmove = function(e){ 
+    		e.preventDefault(); 
+		}
+	}
+
+	window.addEventListener('load', function() {
+    	FastClick.attach(document.body);
+	}, false);
+
 </script>
 </head>
 <body>
@@ -283,7 +361,7 @@ function toggleShift(){
 			<td></td>
 		</tr>
 	</table>
-	<form id="doPostForm" method="post" target="postframe"></form>
+	<form id="doPostForm" action="" method="post" target="postframe"></form>
 	<iframe name="postframe" id="postframe" src="about:blank"></iframe>
 	<script>
 	document.getElementById("address").value = readCookie("SimpleAddress") ? readCookie("SimpleAddress") : "192.168.1.15";
