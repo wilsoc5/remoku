@@ -8,6 +8,12 @@
 	<meta name="keywords" content="Web, Roku, Remote" />
 	<meta name="description" content="Remoku:Simple contains the minimum necessary code for functionality"	/>
     <meta name="viewport" content="width=device-width, initial-scale=1.4, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="apple-touch-startup-image" href="http://remoku.tv/remoku-splash.png" />
+	<link rel="apple-touch-icon-precomposed" href="http://remoku.tv/apple-touch-icon-precomposed.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://remoku.tv/apple-touch-icon-ipad-precomposed.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://remoku.tv/apple-touch-icon-iphone4-precomposed.png" />
     <meta name="MobileOptimized" content="220" />
 	<link rel="icon" type="image/png" href="http://remoku.tv/favicon.png">
 <style>
@@ -28,34 +34,31 @@
 		text-decoration: none;
 	}
 	
-	.keyboardTable{
-		text-align: center;
-		width:200px;
-	 	font-family:monospace;
-	}
-
-	.keyboardTable td{
-		width:10px;
-	}
-	#address{
+	#address, #textinput{
 		width:100px;
+		background-color:#696969;
+		color:white;
+		-webkit-appearance: none;
+		border-radius: 0;
 	}
-
+	
 	#remoteTable{
 		text-align: center;
 	}
 
-	#remoteTable input[type="button"]{
+	input[type="button"]{
 		vertical-align: middle;
-		width:100%;
+		width:50px;
 		height:30px;
+		border:0;
+		background-color:#696969;
+		color:white;
+		-webkit-appearance: none;
+		border-radius: 0;
 	}
 
 	#transportRow input{
 		margin-top:10px;
-	}
-	#capsLock{
-		border-bottom:1px white solid;
 	}
 	
 	#doPostForm, #postframe{
@@ -65,10 +68,13 @@
 	}
 	
 @media handheld{
-		#remoteTable input[type="button"]{
+		input[type="button"]{
 			overflow: visible;
 			padding-top:8px;
 			margin:0;
+			border:0;
+			background-color:#696969;
+			color:white;
 		}
 }
 </style>
@@ -154,42 +160,30 @@ if (!Element.prototype.addEventListener) {
 		createCookie('SimpleAddress',newAddress,365);
 	}
 	
-	var caps = false;
-	var shiftOn = false;
-	
-	function toggleCaps(){
-	caps = !caps;
-	if(caps){
-		document.getElementById("capsLock").style.color="red";
-		//alert("red");
-	}else{
-		document.getElementById("capsLock").style.color="white";
-		//alert("white");
-	}
-	if(shiftOn)toggleShift();
-	return false;
-	}
 
-	function toggleShift(){
-		shiftOn = !shiftOn;
-		if(shiftOn){
-			document.getElementById("shiftBtn").style.color="red";
-			//alert("red");
-		}else{
-			document.getElementById("shiftBtn").style.color="white";
-			//alert("white");
+	function doText(){
+		var text = document.getElementById("textinput").value;
+		if(text.length>1){
+			var character = text.slice(0,1);
+			document.getElementById("textinput").value = text.slice(1,text.length);
+			//NOTE NOTE NOTE
+			//encodeURIComponent doesn't encode -_.!~*'()
+			doSubmit("Lit_" + encodeURIComponent(character));
+			setTimeout(function(){
+				doText();
+				},
+			250);
+		} else if(text.length==1){
+			doSubmit("Lit_" + encodeURIComponent(text));
+			document.getElementById("textinput").value = "Type here";
+		} else {
+			document.getElementById("textinput").value = "Type here";
 		}
-		return false;
 	}
 	
 	function doSubmit(command){
 		if (command=="OK"){command="Select"};
 		if (command=="Replay"){command="InstantReplay"};
-		if((shiftOn || caps) && command.indexOf("Lit_")>=0){
-			command = "Lit_" + command.substring(4).toUpperCase();
-			//console.log(command);
-			if(shiftOn)toggleShift();
-		}
 		document.getElementById("doPostForm").action = "http://" + document.getElementById("address").value + ":8060/keypress/" + command;
 		document.getElementById("doPostForm").submit();
 		return false;
@@ -204,7 +198,10 @@ if (!Element.prototype.addEventListener) {
 	window.addEventListener('load', function() {
     	FastClick.attach(document.body);
 	}, false);
-
+	
+	if (window.screen.height==568) { // iPhone with 4 inch screen workaround for letterboxed home screen web app
+		document.querySelector("meta[name=viewport]").content="width=320.1, initial-scale=1.4, user-scalable=no";
+	}
 </script>
 </head>
 <body>
@@ -265,102 +262,9 @@ if (!Element.prototype.addEventListener) {
 			</td>
 		</tr>
 	</table>
-	<table class="keyboardTable">
-		<tr>
-			<td>
-				<a href="#" accesskey="q" onclick="return doSubmit('Lit_q');">q</a>
-			</td>
-			<td>
-				<a href="#" accesskey="w" onclick="return doSubmit('Lit_w');">w</a>
-			</td>
-			<td>
-				<a href="#" accesskey="e" onclick="return doSubmit('Lit_e');">e</a>
-			</td>
-			<td>
-				<a href="#" accesskey="r" onclick="return doSubmit('Lit_r');">r</a>
-			</td>
-			<td>
-				<a href="#" accesskey="t" onclick="return doSubmit('Lit_t');">t</a>
-			</td>
-			<td>
-				<a href="#" accesskey="y" onclick="return doSubmit('Lit_y');">y</a>
-			</td>
-			<td>
-				<a href="#" accesskey="u" onclick="return doSubmit('Lit_u');">u</a>
-			</td>
-			<td>
-				<a href="#" accesskey="i" onclick="return doSubmit('Lit_i');">i</a>
-			</td>
-			<td>
-				<a href="#" accesskey="o" onclick="return doSubmit('Lit_o');">o</a>
-			</td>
-			<td>
-				<a href="#" accesskey="p" onclick="return doSubmit('Lit_p');">p</a>
-			</td>
-		</tr>
-	</table>
-	<table class="keyboardTable">
-		<tr>
-			<td><b><a id="capsLock" href="#" onclick="return toggleCaps();">&uarr;</a></b></td>
-			<td>
-				<a href="#" accesskey="a" onclick="return doSubmit('Lit_a');">a</a>
-			</td>
-			<td>
-				<a href="#" accesskey="s" onclick="return doSubmit('Lit_s');">s</a>
-			</td>
-			<td>
-				<a href="#" accesskey="d" onclick="return doSubmit('Lit_d');">d</a>
-			</td>
-			<td>
-				<a href="#" accesskey="f" onclick="return doSubmit('Lit_f');">f</a>
-			</td>
-			<td>
-				<a href="#" accesskey="g" onclick="return doSubmit('Lit_g');">g</a>
-			</td>
-			<td>
-				<a href="#" accesskey="h" onclick="return doSubmit('Lit_h');">h</a>
-			</td>
-			<td>
-				<a href="#" accesskey="j" onclick="return doSubmit('Lit_j');">j</a>
-			</td>
-			<td>
-				<a href="#" accesskey="k" onclick="return doSubmit('Lit_k');">k</a>
-			</td>
-			<td>
-				<a href="#" accesskey="l" onclick="return doSubmit('Lit_l');">l</a>
-			</td>
-			<td></td>
-		</tr>
-	</table>
-	<table class="keyboardTable">
-		<tr>
-			<td><b><a id="shiftBtn" href="#" onclick="return toggleShift();">&uarr;</a></b></td>
-			<!--td></td-->
-			<td>
-				<a href="#" accesskey="z" onclick="return doSubmit('Lit_z');">z</a>
-			</td>
-			<td>
-				<a href="#" accesskey="x" onclick="return doSubmit('Lit_x');">x</a>
-			</td>
-			<td>
-				<a href="#" accesskey="c" onclick="return doSubmit('Lit_c');">c</a>
-			</td>
-			<td>
-				<a href="#" accesskey="v" onclick="return doSubmit('Lit_v');">v</a>
-			</td>
-			<td>
-				<a href="#" accesskey="b" onclick="return doSubmit('Lit_b');">b</a>
-			</td>
-			<td>
-				<a href="#" accesskey="n" onclick="return doSubmit('Lit_n');">n</a>
-			</td>
-			<td>
-				<a href="#" accesskey="m" onclick="return doSubmit('Lit_m');">m</a>
-			</td>
-			<!--td></td-->
-			<td></td>
-		</tr>
-	</table>
+	<label for="textinput">Text</label>
+	<input name="textinput" id="textinput" value="Type here" onfocus="if(this.value=='Type here')this.value='';" onblur="if(this.value=='')this.value= 'Type here';" />
+	<input id="sendBtn" type="button" onclick="doText();" value="Send"/>
 	<form id="doPostForm" action="" method="post" target="postframe"></form>
 	<iframe name="postframe" id="postframe" src="about:blank"></iframe>
 	<script>
