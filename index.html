@@ -55,6 +55,7 @@
 		color:white;
 		-webkit-appearance: none;
 		border-radius: 0;
+		font-family: monospace;
 	}
 
 	#transportRow input{
@@ -161,6 +162,12 @@ if (!Element.prototype.addEventListener) {
 	}
 	
 
+	function checkEnter(event){
+		if (event.keyCode==13) {
+        	doText();
+    	}
+	}
+
 	function doText(){
 		var text = document.getElementById("textinput").value;
 		if(text.length>1){
@@ -263,7 +270,7 @@ if (!Element.prototype.addEventListener) {
 		</tr>
 	</table>
 	<label for="textinput">Text</label>
-	<input name="textinput" id="textinput" value="Type here" onfocus="if(this.value=='Type here')this.value='';" onblur="if(this.value=='')this.value= 'Type here';" />
+	<input name="textinput" id="textinput" value="Type here" onkeydown="checkEnter(event);" onfocus="if(this.value=='Type here')this.value='';" onblur="if(this.value=='')this.value= 'Type here';" />
 	<input id="sendBtn" type="button" onclick="doText();" value="Send"/>
 	<form id="doPostForm" action="" method="post" target="postframe"></form>
 	<iframe name="postframe" id="postframe" src="about:blank"></iframe>
